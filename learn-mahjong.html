@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn to Play Mahjong</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f8f9fa;
+            border-right: 2px solid #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .lesson-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .lesson-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .lesson-item.active {
+            background: #2196F3;
+            color: white;
+            border-left-color: #0d47a1;
+        }
+
+        .lesson-item.completed {
+            border-left-color: #4caf50;
+        }
+
+        .lesson-item.completed::after {
+            content: " ✓";
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .lesson-item.active.completed::after {
+            color: white;
+        }
+
+        .lesson-number {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .lesson-content {
+            display: none;
+        }
+
+        .lesson-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-content h2 {
+            color: #1e3c72;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .lesson-content p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .tile-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .tile {
+            width: 60px;
+            height: 80px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .tile.selected {
+            background: #4caf50;
+            color: white;
+            transform: translateY(-10px);
+        }
+
+        .tile.correct {
+            background: #4caf50;
+            color: white;
+            animation: pulse 0.5s;
+        }
+
+        .tile.incorrect {
+            background: #f44336;
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .tile-label {
+            font-size: 0.6em;
+            position: absolute;
+            bottom: 5px;
+            color: #666;
+        }
+
+        .tile.selected .tile-label,
+        .tile.correct .tile-label,
+        .tile.incorrect .tile-label {
+            color: white;
+        }
+
+        .interactive-area {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .interactive-area h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.5s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .feedback.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            transition: width 0.5s;
+            border-radius: 4px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+                max-height: 200px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .lesson-content h2 {
+                font-size: 1.5em;
+            }
+
+            .tile {
+                width: 50px;
+                height: 70px;
+                font-size: 1.4em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Accessibility */
+        button:focus,
+        .tile:focus,
+        .lesson-item:focus {
+            outline: 3px solid #ff9800;
+            outline-offset: 2px;
+        }
+
+        .tile {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Learn to Play Mahjong</h1>
+            <p>Master the ancient game of tiles through interactive lessons</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="sidebar">
+                <div class="lesson-item active" data-lesson="1">
+                    <span class="lesson-number">Lesson 1</span>
+                    Introduction to Mahjong
+                </div>
+                <div class="lesson-item" data-lesson="2">
+                    <span class="lesson-number">Lesson 2</span>
+                    The Tiles: Suits
+                </div>
+                <div class="lesson-item" data-lesson="3">
+                    <span class="lesson-number">Lesson 3</span>
+                    Honor Tiles
+                </div>
+                <div class="lesson-item" data-lesson="4">
+                    <span class="lesson-number">Lesson 4</span>
+                    Building Sets
+                </div>
+                <div class="lesson-item" data-lesson="5">
+                    <span class="lesson-number">Lesson 5</span>
+                    Winning Hand
+                </div>
+                <div class="lesson-item" data-lesson="6">
+                    <span class="lesson-number">Lesson 6</span>
+                    Gameplay Basics
+                </div>
+                <div class="lesson-item" data-lesson="7">
+                    <span class="lesson-number">Lesson 7</span>
+                    Practice: Identify Pairs
+                </div>
+                <div class="lesson-item" data-lesson="8">
+                    <span class="lesson-number">Lesson 8</span>
+                    Practice: Find Pungs
+                </div>
+                <div class="lesson-item" data-lesson="9">
+                    <span class="lesson-number">Lesson 9</span>
+                    Practice: Find Chows
+                </div>
+                <div class="lesson-item" data-lesson="10">
+                    <span class="lesson-number">Lesson 10</span>
+                    Advanced: Scoring Basics
+                </div>
+                <div class="lesson-item" data-lesson="11">
+                    <span class="lesson-number">Lesson 11</span>
+                    Advanced: Special Hands
+                </div>
+                <div class="lesson-item" data-lesson="12">
+                    <span class="lesson-number">Lesson 12</span>
+                    Practice: Build Winning Hand
+                </div>
+                <div class="lesson-item" data-lesson="13">
+                    <span class="lesson-number">Lesson 13</span>
+                    Advanced: Strategy
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Lesson 1 -->
+                <div class="lesson-content active" data-lesson="1">
+                    <h2>Welcome to Mahjong!</h2>
+                    <p>Mahjong is a classic Chinese tile-based game that combines skill, strategy, and a bit of luck. It's typically played by four players and uses a set of 144 tiles.</p>
+
+                    <div class="info-box">
+                        <h4>What You'll Learn</h4>
+                        <p>In this interactive tutorial, you'll master the fundamentals of Mahjong:</p>
+                        <ul>
+                            <li>Understanding the different types of tiles</li>
+                            <li>How to build winning hands</li>
+                            <li>Basic gameplay and rules</li>
+                            <li>Strategy and tactics</li>
+                        </ul>
+                    </div>
+
+                    <p>The goal of Mahjong is to be the first player to complete a winning hand by collecting sets of tiles. A winning hand typically consists of 14 tiles organized into specific combinations.</p>
+
+                    <div class="info-box">
+                        <h4>Did You Know?</h4>
+                        <p>Mahjong originated in China during the Qing dynasty and has been played for over 100 years. Today, it's enjoyed by millions of people worldwide!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Start the first lesson">Start Learning →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="lesson-content" data-lesson="2">
+                    <h2>The Tiles: Suits</h2>
+                    <p>Mahjong uses 144 tiles divided into several categories. Let's start with the three main suits:</p>
+
+                    <div class="info-box">
+                        <h4>The Three Suits</h4>
+                        <ul>
+                            <li><strong>Bamboo (Sticks):</strong> Numbered 1-9, represented by bamboo sticks</li>
+                            <li><strong>Characters (Wan):</strong> Numbered 1-9, shown with Chinese characters</li>
+                            <li><strong>Dots (Circles):</strong> Numbered 1-9, displayed as circles</li>
+                        </ul>
+                    </div>
+
+                    <p>Each suit has tiles numbered from 1 to 9, and there are four identical copies of each tile in the set.</p>
+
+                    <div class="tile-display">
+                        <div class="tile">🎋<div class="tile-label">1 Bam</div></div>
+                        <div class="tile">🎋🎋<div class="tile-label">2 Bam</div></div>
+                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                        <div class="tile">萬<div class="tile-label">1 Char</div></div>
+                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
+                        <div class="tile">三萬<div class="tile-label">3 Char</div></div>
+                        <div class="tile">⚫<div class="tile-label">1 Dot</div></div>
+                        <div class="tile">⚫⚫<div class="tile-label">2 Dot</div></div>
+                        <div class="tile">⚫⚫⚫<div class="tile-label">3 Dot</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Key Point</h4>
+                        <p>Each numbered tile (1-9) in each suit appears exactly 4 times in a complete Mahjong set. That's 36 tiles per suit, for a total of 108 suited tiles!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 3 -->
+                <div class="lesson-content" data-lesson="3">
+                    <h2>Honor Tiles</h2>
+                    <p>In addition to the three suits, Mahjong has special tiles called Honor Tiles. These are divided into two groups:</p>
+
+                    <div class="info-box">
+                        <h4>Dragons (3 types, 4 of each)</h4>
+                        <ul>
+                            <li><strong>Red Dragon (中):</strong> Red character meaning "center"</li>
+                            <li><strong>Green Dragon (發):</strong> Green character meaning "prosperity"</li>
+                            <li><strong>White Dragon (白):</strong> Often blank or with a border</li>
+                        </ul>
+                    </div>
+
+                    <div class="tile-display">
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                        <div class="tile" style="color: green;">發<div class="tile-label">Green</div></div>
+                        <div class="tile" style="border: 3px solid #2196F3;">⬜<div class="tile-label">White</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Winds (4 types, 4 of each)</h4>
+                        <ul>
+                            <li><strong>East Wind (東)</strong></li>
+                            <li><strong>South Wind (南)</strong></li>
+                            <li><strong>West Wind (西)</strong></li>
+                            <li><strong>North Wind (北)</strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="tile-display">
+                        <div class="tile">東<div class="tile-label">East</div></div>
+                        <div class="tile">南<div class="tile-label">South</div></div>
+                        <div class="tile">西<div class="tile-label">West</div></div>
+                        <div class="tile">北<div class="tile-label">North</div></div>
+                    </div>
+
+                    <p>Honor tiles don't have numbers and can only form sets with identical tiles (unlike suited tiles which can form sequences).</p>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 4 -->
+                <div class="lesson-content" data-lesson="4">
+                    <h2>Building Sets</h2>
+                    <p>To win at Mahjong, you need to organize your 14 tiles into specific combinations called sets. There are three main types:</p>
+
+                    <div class="info-box">
+                        <h4>1. Pung (Triplet)</h4>
+                        <p>Three identical tiles</p>
+                    </div>
+                    <div class="tile-display">
+                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>2. Chow (Sequence)</h4>
+                        <p>Three consecutive tiles of the same suit</p>
+                    </div>
+                    <div class="tile-display">
+                        <div class="tile">⚫⚫⚫<div class="tile-label">3 Dot</div></div>
+                        <div class="tile">⚫⚫⚫⚫<div class="tile-label">4 Dot</div></div>
+                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>3. Kong (Quad)</h4>
+                        <p>Four identical tiles (advanced)</p>
+                    </div>
+                    <div class="tile-display">
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Important Notes</h4>
+                        <ul>
+                            <li>Sequences (Chows) can only be made with suited tiles, not honors</li>
+                            <li>Honor tiles can only form Pungs or Kongs (identical sets)</li>
+                            <li>A sequence must be consecutive numbers in the SAME suit</li>
+                        </ul>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 5 -->
+                <div class="lesson-content" data-lesson="5">
+                    <h2>The Winning Hand</h2>
+                    <p>A standard winning hand in Mahjong consists of 14 tiles organized in this pattern:</p>
+
+                    <div class="info-box">
+                        <h4>Winning Hand Formula</h4>
+                        <p><strong>4 Sets + 1 Pair = 14 tiles</strong></p>
+                        <ul>
+                            <li>4 sets of 3 tiles each (Pungs or Chows) = 12 tiles</li>
+                            <li>1 pair of identical tiles = 2 tiles</li>
+                            <li>Total = 14 tiles</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Example Winning Hand:</strong></p>
+
+                    <div class="tile-display">
+                        <div class="tile">🎋<div class="tile-label">1 Bam</div></div>
+                        <div class="tile">🎋🎋<div class="tile-label">2 Bam</div></div>
+                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                        <div style="width: 20px;"></div>
+                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
+                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
+                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
+                        <div style="width: 20px;"></div>
+                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
+                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
+                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
+                        <div style="width: 20px;"></div>
+                        <div class="tile">東<div class="tile-label">East</div></div>
+                        <div class="tile">東<div class="tile-label">East</div></div>
+                        <div class="tile">東<div class="tile-label">East</div></div>
+                        <div style="width: 20px;"></div>
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Breaking it down:</h4>
+                        <ul>
+                            <li><strong>Set 1:</strong> Chow of 1-2-3 Bamboo</li>
+                            <li><strong>Set 2:</strong> Pung of 5 Dots</li>
+                            <li><strong>Set 3:</strong> Pung of 2 Characters</li>
+                            <li><strong>Set 4:</strong> Pung of East Winds</li>
+                            <li><strong>Pair:</strong> Red Dragons</li>
+                        </ul>
+                    </div>
+
+                    <p>When you complete this pattern, you declare "Mahjong!" and win the hand!</p>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 6 -->
+                <div class="lesson-content" data-lesson="6">
+                    <h2>Gameplay Basics</h2>
+                    <p>Now that you understand tiles and winning hands, let's learn how a game of Mahjong is played:</p>
+
+                    <div class="info-box">
+                        <h4>Game Setup</h4>
+                        <ul>
+                            <li>Four players sit around a square table</li>
+                            <li>Each player is assigned a wind direction (East, South, West, North)</li>
+                            <li>The tiles are shuffled and each player draws 13 tiles to start</li>
+                            <li>Tiles remaining form the "wall" to draw from</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Turn Sequence</h4>
+                        <ol>
+                            <li><strong>Draw:</strong> Take a tile from the wall (now you have 14 tiles)</li>
+                            <li><strong>Evaluate:</strong> Look at your hand and decide what to discard</li>
+                            <li><strong>Discard:</strong> Place one tile face-up in the center (back to 13 tiles)</li>
+                            <li><strong>Claim:</strong> Other players can claim your discard for certain sets</li>
+                        </ol>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Claiming Discards</h4>
+                        <ul>
+                            <li><strong>Pung:</strong> If you have 2 matching tiles, you can claim a discard to make a Pung</li>
+                            <li><strong>Chow:</strong> If you're next in turn, you can claim a discard to complete a sequence</li>
+                            <li><strong>Mahjong:</strong> If a discard completes your winning hand, call "Mahjong!" immediately</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Winning</h4>
+                        <p>You can win by:</p>
+                        <ul>
+                            <li>Drawing the tile you need from the wall (self-draw)</li>
+                            <li>Claiming a discarded tile that completes your hand</li>
+                        </ul>
+                        <p>The first player to complete a valid 14-tile hand wins the round!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to practice exercises">Practice →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 7 - Interactive Practice -->
+                <div class="lesson-content" data-lesson="7">
+                    <h2>Practice: Identify Pairs</h2>
+                    <p>Let's practice! A pair consists of two identical tiles. Click on tiles to select them and try to identify all the pairs.</p>
+
+                    <div class="interactive-area">
+                        <h3>Find the matching pairs:</h3>
+                        <div class="tile-display" id="practiceArea" role="group" aria-label="Mahjong tiles practice area">
+                            <!-- Tiles will be added by JavaScript -->
+                        </div>
+                        <div class="feedback" id="feedback" role="alert" aria-live="polite"></div>
+                        <div class="button-group">
+                            <button class="btn-primary" onclick="checkPairs()" aria-label="Check your selected pairs">Check Answer</button>
+                            <button class="btn-secondary" onclick="resetPractice()" aria-label="Reset practice and try again">Try Again</button>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Tip</h4>
+                        <p>Remember: A pair is exactly two tiles that are completely identical - same suit/honor and same number/type!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" id="pairsNextBtn" onclick="nextLesson()" disabled aria-label="Continue to next practice">Next Practice →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 8 - Practice: Find Pungs -->
+                <div class="lesson-content" data-lesson="8">
+                    <h2>Practice: Find Pungs</h2>
+                    <p>A Pung is a set of three identical tiles. Look at the tiles below and select all sets of three matching tiles!</p>
+
+                    <div class="interactive-area">
+                        <h3>Select all tiles that form Pungs (triplets):</h3>
+                        <div class="tile-display" id="pungPracticeArea" role="group" aria-label="Pung practice area"></div>
+                        <div class="feedback" id="pungFeedback" role="alert" aria-live="polite"></div>
+                        <div class="button-group">
+                            <button class="btn-primary" onclick="checkPungs()" aria-label="Check your selected pungs">Check Answer</button>
+                            <button class="btn-secondary" onclick="resetPungPractice()" aria-label="Reset practice">Try Again</button>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Remember</h4>
+                        <p>A Pung requires exactly THREE identical tiles. They must match perfectly - same suit and same number, or same honor tile!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" id="pungNextBtn" onclick="nextLesson()" disabled aria-label="Continue to next practice">Next Practice →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 9 - Practice: Find Chows -->
+                <div class="lesson-content" data-lesson="9">
+                    <h2>Practice: Find Chows</h2>
+                    <p>A Chow is a sequence of three consecutive tiles in the same suit. Find all the valid sequences!</p>
+
+                    <div class="interactive-area">
+                        <h3>Select tiles that form Chows (sequences):</h3>
+                        <div class="tile-display" id="chowPracticeArea" role="group" aria-label="Chow practice area"></div>
+                        <div class="feedback" id="chowFeedback" role="alert" aria-live="polite"></div>
+                        <div class="button-group">
+                            <button class="btn-primary" onclick="checkChows()" aria-label="Check your selected chows">Check Answer</button>
+                            <button class="btn-secondary" onclick="resetChowPractice()" aria-label="Reset practice">Try Again</button>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Remember</h4>
+                        <p>A Chow requires THREE consecutive tiles of the SAME suit (e.g., 3-4-5 of Bamboo). Chows cannot be made with Honor tiles!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" id="chowNextBtn" onclick="nextLesson()" disabled aria-label="Continue to advanced lessons">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 10 - Advanced: Scoring Basics -->
+                <div class="lesson-content" data-lesson="10">
+                    <h2>Advanced: Scoring Basics</h2>
+                    <p>In Mahjong, different hands are worth different amounts of points. Let's learn the basics of scoring!</p>
+
+                    <div class="info-box">
+                        <h4>Base Scoring System</h4>
+                        <p>Mahjong uses a point system where certain combinations earn you more points:</p>
+                        <ul>
+                            <li><strong>Basic Hand:</strong> Just completing 4 sets + 1 pair = Minimum points</li>
+                            <li><strong>Concealed Hand:</strong> No claimed tiles from others = Double points</li>
+                            <li><strong>Self-Draw:</strong> Drawing your winning tile yourself = Bonus points</li>
+                            <li><strong>All Simples:</strong> Only 2-8 tiles (no 1s, 9s, or honors) = More points</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Value of Sets</h4>
+                        <ul>
+                            <li><strong>Chow (Sequence):</strong> No extra points - basic set</li>
+                            <li><strong>Pung of Simples (2-8):</strong> Low value</li>
+                            <li><strong>Pung of Terminals (1 or 9):</strong> Medium value</li>
+                            <li><strong>Pung of Dragons:</strong> Medium-high value</li>
+                            <li><strong>Pung of Your Wind:</strong> Medium-high value</li>
+                            <li><strong>Kong (4 identical):</strong> Higher value than Pung</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Example Scoring</h4>
+                        <p>Simple hand: 1-2-3 Bamboo (Chow) + 5-5-5 Dots (Pung) + 7-8-9 Characters (Chow) + East-East-East (Pung) + Red-Red (Pair)</p>
+                        <p><strong>Points:</strong> Base (1) + Pung of Simples (1) + Pung of Dragons/Winds (2) = 4 points minimum</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Important Note</h4>
+                        <p>Scoring systems vary by region (Hong Kong, Japanese Riichi, American, etc.). This is a simplified version to help you understand the concept!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 11 - Advanced: Special Hands -->
+                <div class="lesson-content" data-lesson="11">
+                    <h2>Advanced: Special Hands</h2>
+                    <p>Some hand patterns are so special they're worth significantly more points. Let's explore the most common special hands!</p>
+
+                    <div class="info-box">
+                        <h4>1. All Pungs (Triplets Only)</h4>
+                        <p>Four Pungs + One Pair (no Chows)</p>
+                        <div class="tile-display">
+                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                            <div style="width: 10px;"></div>
+                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
+                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
+                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
+                            <div style="width: 10px;"></div>
+                            <div class="tile">東<div class="tile-label">East</div></div>
+                            <div class="tile">東<div class="tile-label">East</div></div>
+                            <div class="tile">東<div class="tile-label">East</div></div>
+                            <div style="width: 10px;"></div>
+                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                            <div style="width: 10px;"></div>
+                            <div class="tile">萬<div class="tile-label">1 Char</div></div>
+                            <div class="tile">萬<div class="tile-label">1 Char</div></div>
+                        </div>
+                        <p><strong>Value:</strong> High - Worth many points!</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>2. All One Suit (Clean Hand)</h4>
+                        <p>All tiles from one suit only (plus optional Dragon/Wind for Mixed One Suit)</p>
+                        <ul>
+                            <li><strong>Pure:</strong> Only one suit = Very high value</li>
+                            <li><strong>Mixed:</strong> One suit + honors = High value</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>3. All Terminals and Honors</h4>
+                        <p>Only 1s, 9s, and honor tiles</p>
+                        <p><strong>Value:</strong> Very high - Difficult to achieve!</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>4. Seven Pairs</h4>
+                        <p>Instead of 4 sets + 1 pair, collect 7 different pairs</p>
+                        <p><strong>Value:</strong> Medium-high - Alternative winning pattern!</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>5. Thirteen Orphans (Ultimate Hand)</h4>
+                        <p>One of each terminal (1, 9 of each suit) + one of each honor + one duplicate</p>
+                        <p><strong>Value:</strong> Maximum - Extremely rare!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Practice →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 12 - Practice: Build Winning Hand -->
+                <div class="lesson-content" data-lesson="12">
+                    <h2>Practice: Build a Winning Hand</h2>
+                    <p>Now it's time to put it all together! You have 13 tiles. Select one more tile to complete a winning hand!</p>
+
+                    <div class="interactive-area">
+                        <h3>Your Current Hand (13 tiles):</h3>
+                        <div class="tile-display" id="currentHand"></div>
+
+                        <h3 style="margin-top: 30px;">Choose the winning tile:</h3>
+                        <div class="tile-display" id="winningTileOptions"></div>
+
+                        <div class="feedback" id="winHandFeedback" role="alert" aria-live="polite"></div>
+                        <div class="button-group">
+                            <button class="btn-secondary" onclick="resetWinningHandPractice()" aria-label="Try a different hand">New Hand</button>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Hint</h4>
+                        <p>Remember: A winning hand needs 4 sets (Pungs or Chows) + 1 pair = 14 tiles total. Look at what you have and think about what's missing!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" id="winHandNextBtn" onclick="nextLesson()" disabled aria-label="Continue to strategy lesson">Next Lesson →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 13 - Advanced: Strategy -->
+                <div class="lesson-content" data-lesson="13">
+                    <h2>Advanced: Strategy and Defense</h2>
+                    <p>Congratulations on making it to the final lesson! Let's explore winning strategies and defensive play.</p>
+
+                    <div class="info-box">
+                        <h4>Offensive Strategy</h4>
+                        <ul>
+                            <li><strong>Flexibility:</strong> Keep multiple ways to complete your hand</li>
+                            <li><strong>Tile Efficiency:</strong> Discard tiles that limit your options</li>
+                            <li><strong>Speed vs. Value:</strong> Decide if you want a fast, low-scoring win or wait for higher value</li>
+                            <li><strong>Watch the Discards:</strong> Pay attention to what others discard to know what's available</li>
+                            <li><strong>Middle Tiles First:</strong> 4-5-6 tiles are more flexible than 1-2-3 or 7-8-9</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Defensive Strategy</h4>
+                        <ul>
+                            <li><strong>Read the Table:</strong> Notice which tiles opponents are collecting</li>
+                            <li><strong>Safe Tiles:</strong> Discard tiles that have already been discarded by others</li>
+                            <li><strong>Dangerous Tiles:</strong> Avoid discarding tiles close to what opponents are collecting</li>
+                            <li><strong>Fold When Needed:</strong> If someone is close to winning, play defensively</li>
+                            <li><strong>Terminal Strategy:</strong> Late-game, 1s and 9s are usually safer to discard</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Advanced Tactics</h4>
+                        <ul>
+                            <li><strong>Furiten (Riichi):</strong> In some variants, you can't win on a tile you previously discarded</li>
+                            <li><strong>Blocking:</strong> Hold tiles you think opponents need</li>
+                            <li><strong>Tile Counting:</strong> Track which tiles have been played (4 of each exist)</li>
+                            <li><strong>Position Awareness:</strong> Remember turn order affects claiming opportunities</li>
+                            <li><strong>Risk Assessment:</strong> Balance the risk of dealing into someone's hand vs. improving yours</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Example: Reading Discards</h4>
+                        <p>If a player discards: 1 Bam, 9 Bam, 1 Dot, East Wind</p>
+                        <p><strong>Analysis:</strong> They're likely building middle tiles in suits and don't need honors. Be careful discarding 3-7 range tiles in Bamboo and Dots!</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Final Tips</h4>
+                        <ul>
+                            <li>Practice makes perfect - the more you play, the better you'll recognize patterns</li>
+                            <li>Start with simpler hands and work your way up to special hands</li>
+                            <li>Learn from every game - even losses teach valuable lessons</li>
+                            <li>Play with others to learn different strategies and regional rules</li>
+                            <li>Most importantly - have fun! Mahjong is a social game meant to be enjoyed</li>
+                        </ul>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="completeLesson()" aria-label="Complete the tutorial">Complete Tutorial! 🎉</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lesson navigation
+        let currentLesson = 1;
+        const totalLessons = 13;
+        const completedLessons = new Set();
+
+        function updateProgress() {
+            const progress = (completedLessons.size / totalLessons) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function switchLesson(lessonNum) {
+            // Hide all lessons
+            document.querySelectorAll('.lesson-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected lesson
+            document.querySelector(`.lesson-content[data-lesson="${lessonNum}"]`).classList.add('active');
+
+            // Update sidebar
+            document.querySelectorAll('.lesson-item').forEach(item => {
+                item.classList.remove('active');
+                if (parseInt(item.dataset.lesson) === lessonNum) {
+                    item.classList.add('active');
+                }
+            });
+
+            currentLesson = lessonNum;
+
+            // Mark previous lessons as completed
+            if (lessonNum > 1) {
+                for (let i = 1; i < lessonNum; i++) {
+                    completedLessons.add(i);
+                    document.querySelector(`.lesson-item[data-lesson="${i}"]`).classList.add('completed');
+                }
+                updateProgress();
+            }
+        }
+
+        function nextLesson() {
+            if (currentLesson < totalLessons) {
+                completedLessons.add(currentLesson);
+                document.querySelector(`.lesson-item[data-lesson="${currentLesson}"]`).classList.add('completed');
+                switchLesson(currentLesson + 1);
+                updateProgress();
+            }
+        }
+
+        function previousLesson() {
+            if (currentLesson > 1) {
+                switchLesson(currentLesson - 1);
+            }
+        }
+
+        function completeLesson() {
+            completedLessons.add(currentLesson);
+            updateProgress();
+            alert('Congratulations! You\'ve completed the Mahjong tutorial! 🎉\n\nYou now know:\n- The different types of tiles\n- How to build sets\n- What makes a winning hand\n- Basic gameplay rules\n\nKeep practicing to become a Mahjong master!');
+        }
+
+        // Sidebar click handlers
+        document.querySelectorAll('.lesson-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const lessonNum = parseInt(this.dataset.lesson);
+                switchLesson(lessonNum);
+            });
+        });
+
+        // Interactive practice game
+        const practiceTiles = [
+            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
+            { id: 2, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
+            { id: 3, symbol: '⚫⚫', label: '2 Dot', type: 'dot-2' },
+            { id: 4, symbol: '⚫⚫', label: '2 Dot', type: 'dot-2' },
+            { id: 5, symbol: '東', label: 'East', type: 'east' },
+            { id: 6, symbol: '南', label: 'South', type: 'south' },
+            { id: 7, symbol: '三萬', label: '3 Char', type: 'char-3' },
+            { id: 8, symbol: '三萬', label: '3 Char', type: 'char-3' }
+        ];
+
+        let selectedTiles = [];
+        let correctPairs = 0;
+
+        function initPractice() {
+            const practiceArea = document.getElementById('practiceArea');
+            practiceArea.innerHTML = '';
+
+            // Shuffle tiles
+            const shuffled = [...practiceTiles].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(tile => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                tileElement.dataset.id = tile.id;
+                tileElement.dataset.type = tile.type;
+                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                tileElement.onclick = () => selectTile(tileElement);
+                tileElement.setAttribute('role', 'button');
+                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('tabindex', '0');
+                tileElement.onkeypress = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectTile(tileElement);
+                    }
+                };
+                practiceArea.appendChild(tileElement);
+            });
+        }
+
+        function selectTile(element) {
+            if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+                return;
+            }
+
+            element.classList.toggle('selected');
+
+            const tileId = parseInt(element.dataset.id);
+            const index = selectedTiles.indexOf(tileId);
+
+            if (index > -1) {
+                selectedTiles.splice(index, 1);
+            } else {
+                selectedTiles.push(tileId);
+            }
+        }
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentLesson < totalLessons) {
+                nextLesson();
+            } else if (e.key === 'ArrowLeft' && currentLesson > 1) {
+                previousLesson();
+            }
+        });
+
+        function checkPairs() {
+            const feedback = document.getElementById('feedback');
+            feedback.classList.remove('show', 'success', 'error');
+
+            if (selectedTiles.length === 0) {
+                feedback.textContent = 'Please select some tiles first!';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            if (selectedTiles.length % 2 !== 0) {
+                feedback.textContent = 'Pairs must have exactly 2 tiles. Select an even number of tiles!';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            // Check if selected tiles form valid pairs
+            const selectedTypes = selectedTiles.map(id => {
+                const tile = practiceTiles.find(t => t.id === id);
+                return tile ? tile.type : null;
+            });
+
+            const typeCounts = {};
+            selectedTypes.forEach(type => {
+                typeCounts[type] = (typeCounts[type] || 0) + 1;
+            });
+
+            const allPairs = Object.values(typeCounts).every(count => count === 2);
+
+            if (allPairs && selectedTiles.length === 8) {
+                // All tiles selected and form pairs
+                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                    tile.classList.add('correct');
+                });
+                feedback.textContent = 'Perfect! You found all 4 pairs! 🎉';
+                feedback.classList.add('show', 'success');
+                document.getElementById('pairsNextBtn').disabled = false;
+                correctPairs = 4;
+            } else if (allPairs) {
+                // Correct pairs but not all
+                const pairsFound = selectedTiles.length / 2;
+                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                    tile.classList.add('correct');
+                });
+                feedback.textContent = 'Good job! But there are more pairs to find. Keep going!';
+                feedback.classList.add('show', 'success');
+                correctPairs += pairsFound;
+                selectedTiles = [];
+            } else {
+                // Not valid pairs
+                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                    tile.classList.add('incorrect');
+                    setTimeout(() => {
+                        tile.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                });
+                feedback.textContent = 'Not quite! Remember: pairs must be two IDENTICAL tiles.';
+                feedback.classList.add('show', 'error');
+                selectedTiles = [];
+            }
+        }
+
+        function resetPractice() {
+            selectedTiles = [];
+            correctPairs = 0;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('pairsNextBtn').disabled = true;
+            initPractice();
+        }
+
+        // Initialize practice when page loads
+        initPractice();
+
+        // =================
+        // LESSON 8: Find Pungs Practice
+        // =================
+        const pungTiles = [
+            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
+            { id: 2, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
+            { id: 3, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
+            { id: 4, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
+            { id: 5, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
+            { id: 6, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
+            { id: 7, symbol: '東', label: 'East', type: 'east' },
+            { id: 8, symbol: '東', label: 'East', type: 'east' },
+            { id: 9, symbol: '南', label: 'South', type: 'south' },
+            { id: 10, symbol: '二萬', label: '2 Char', type: 'char-2' },
+            { id: 11, symbol: '三萬', label: '3 Char', type: 'char-3' },
+            { id: 12, symbol: '三萬', label: '3 Char', type: 'char-3' }
+        ];
+
+        let selectedPungTiles = [];
+
+        function initPungPractice() {
+            const practiceArea = document.getElementById('pungPracticeArea');
+            if (!practiceArea) return;
+
+            practiceArea.innerHTML = '';
+            const shuffled = [...pungTiles].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(tile => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                tileElement.dataset.id = tile.id;
+                tileElement.dataset.type = tile.type;
+                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                tileElement.onclick = () => selectPungTile(tileElement);
+                tileElement.setAttribute('role', 'button');
+                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('tabindex', '0');
+                practiceArea.appendChild(tileElement);
+            });
+        }
+
+        function selectPungTile(element) {
+            if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+                return;
+            }
+            element.classList.toggle('selected');
+            const tileId = parseInt(element.dataset.id);
+            const index = selectedPungTiles.indexOf(tileId);
+            if (index > -1) {
+                selectedPungTiles.splice(index, 1);
+            } else {
+                selectedPungTiles.push(tileId);
+            }
+        }
+
+        function checkPungs() {
+            const feedback = document.getElementById('pungFeedback');
+            feedback.classList.remove('show', 'success', 'error');
+
+            if (selectedPungTiles.length === 0) {
+                feedback.textContent = 'Please select some tiles first!';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            if (selectedPungTiles.length % 3 !== 0) {
+                feedback.textContent = 'Pungs must have exactly 3 tiles each! Select a multiple of 3.';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            const selectedTypes = selectedPungTiles.map(id => {
+                const tile = pungTiles.find(t => t.id === id);
+                return tile ? tile.type : null;
+            });
+
+            const typeCounts = {};
+            selectedTypes.forEach(type => {
+                typeCounts[type] = (typeCounts[type] || 0) + 1;
+            });
+
+            const allPungs = Object.values(typeCounts).every(count => count === 3);
+            const correctPungCount = 2; // bamboo-1 and dot-4
+
+            if (allPungs && selectedPungTiles.length === 6) {
+                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                    tile.classList.add('correct');
+                });
+                feedback.textContent = 'Perfect! You found both Pungs! 🎉';
+                feedback.classList.add('show', 'success');
+                document.getElementById('pungNextBtn').disabled = false;
+            } else if (allPungs) {
+                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                    tile.classList.add('correct');
+                });
+                feedback.textContent = 'Good! But there are more Pungs to find!';
+                feedback.classList.add('show', 'success');
+                selectedPungTiles = [];
+            } else {
+                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                    tile.classList.add('incorrect');
+                    setTimeout(() => {
+                        tile.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                });
+                feedback.textContent = 'Not quite! Remember: Pungs are THREE identical tiles.';
+                feedback.classList.add('show', 'error');
+                selectedPungTiles = [];
+            }
+        }
+
+        function resetPungPractice() {
+            selectedPungTiles = [];
+            document.getElementById('pungFeedback').classList.remove('show');
+            document.getElementById('pungNextBtn').disabled = true;
+            initPungPractice();
+        }
+
+        // =================
+        // LESSON 9: Find Chows Practice
+        // =================
+        const chowTiles = [
+            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo', num: 1 },
+            { id: 2, symbol: '🎋🎋', label: '2 Bam', type: 'bamboo', num: 2 },
+            { id: 3, symbol: '🎋🎋🎋', label: '3 Bam', type: 'bamboo', num: 3 },
+            { id: 4, symbol: '⚫⚫⚫⚫⚫', label: '5 Dot', type: 'dot', num: 5 },
+            { id: 5, symbol: '⚫⚫⚫⚫⚫⚫', label: '6 Dot', type: 'dot', num: 6 },
+            { id: 6, symbol: '⚫⚫⚫⚫⚫⚫⚫', label: '7 Dot', type: 'dot', num: 7 },
+            { id: 7, symbol: '東', label: 'East', type: 'honor', num: 0 },
+            { id: 8, symbol: '南', label: 'South', type: 'honor', num: 0 },
+            { id: 9, symbol: '萬', label: '1 Char', type: 'char', num: 1 },
+            { id: 10, symbol: '二萬', label: '2 Char', type: 'char', num: 2 },
+            { id: 11, symbol: '⚫⚫', label: '2 Dot', type: 'dot', num: 2 },
+            { id: 12, symbol: '⚫⚫⚫⚫⚫⚫⚫⚫', label: '8 Dot', type: 'dot', num: 8 }
+        ];
+
+        let selectedChowTiles = [];
+
+        function initChowPractice() {
+            const practiceArea = document.getElementById('chowPracticeArea');
+            if (!practiceArea) return;
+
+            practiceArea.innerHTML = '';
+            const shuffled = [...chowTiles].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(tile => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                tileElement.dataset.id = tile.id;
+                tileElement.dataset.type = tile.type;
+                tileElement.dataset.num = tile.num;
+                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                tileElement.onclick = () => selectChowTile(tileElement);
+                tileElement.setAttribute('role', 'button');
+                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('tabindex', '0');
+                practiceArea.appendChild(tileElement);
+            });
+        }
+
+        function selectChowTile(element) {
+            if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+                return;
+            }
+            element.classList.toggle('selected');
+            const tileId = parseInt(element.dataset.id);
+            const index = selectedChowTiles.indexOf(tileId);
+            if (index > -1) {
+                selectedChowTiles.splice(index, 1);
+            } else {
+                selectedChowTiles.push(tileId);
+            }
+        }
+
+        function checkChows() {
+            const feedback = document.getElementById('chowFeedback');
+            feedback.classList.remove('show', 'success', 'error');
+
+            if (selectedChowTiles.length === 0) {
+                feedback.textContent = 'Please select some tiles first!';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            if (selectedChowTiles.length !== 6) {
+                feedback.textContent = 'There are 2 Chows to find (6 tiles total). Keep looking!';
+                feedback.classList.add('show', 'error');
+                return;
+            }
+
+            const selectedTileData = selectedChowTiles.map(id => chowTiles.find(t => t.id === id));
+
+            // Group by type
+            const groups = {};
+            selectedTileData.forEach(tile => {
+                if (!groups[tile.type]) groups[tile.type] = [];
+                groups[tile.type].push(tile.num);
+            });
+
+            let validChows = 0;
+            for (let type in groups) {
+                if (type === 'honor') continue; // honors can't form chows
+                const nums = groups[type].sort((a, b) => a - b);
+                if (nums.length === 3 && nums[1] === nums[0] + 1 && nums[2] === nums[1] + 1) {
+                    validChows++;
+                }
+            }
+
+            if (validChows === 2) {
+                document.querySelectorAll('#chowPracticeArea .tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                    tile.classList.add('correct');
+                });
+                feedback.textContent = 'Excellent! You found both Chows! 🎉';
+                feedback.classList.add('show', 'success');
+                document.getElementById('chowNextBtn').disabled = false;
+            } else {
+                document.querySelectorAll('#chowPracticeArea .tile.selected').forEach(tile => {
+                    tile.classList.add('incorrect');
+                    setTimeout(() => {
+                        tile.classList.remove('incorrect', 'selected');
+                    }, 1000);
+                });
+                feedback.textContent = 'Not quite! Remember: Chows are 3 consecutive numbers in the SAME suit.';
+                feedback.classList.add('show', 'error');
+                selectedChowTiles = [];
+            }
+        }
+
+        function resetChowPractice() {
+            selectedChowTiles = [];
+            document.getElementById('chowFeedback').classList.remove('show');
+            document.getElementById('chowNextBtn').disabled = true;
+            initChowPractice();
+        }
+
+        // =================
+        // LESSON 12: Build Winning Hand Practice
+        // =================
+        const winningHandScenarios = [
+            {
+                hand: [
+                    { symbol: '🎋', label: '1 Bam' },
+                    { symbol: '🎋🎋', label: '2 Bam' },
+                    { symbol: '🎋🎋🎋', label: '3 Bam' },
+                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
+                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
+                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
+                    { symbol: '東', label: 'East' },
+                    { symbol: '東', label: 'East' },
+                    { symbol: '東', label: 'East' },
+                    { symbol: '萬', label: '1 Char' },
+                    { symbol: '萬', label: '1 Char' },
+                    { symbol: '萬', label: '1 Char' },
+                    { symbol: '中', label: 'Red', style: 'color: red;' }
+                ],
+                options: [
+                    { symbol: '中', label: 'Red', correct: true, style: 'color: red;' },
+                    { symbol: '發', label: 'Green', correct: false, style: 'color: green;' },
+                    { symbol: '⚫', label: '1 Dot', correct: false }
+                ],
+                explanation: 'You need another Red Dragon to complete the pair!'
+            },
+            {
+                hand: [
+                    { symbol: '⚫', label: '1 Dot' },
+                    { symbol: '⚫⚫', label: '2 Dot' },
+                    { symbol: '⚫⚫⚫', label: '3 Dot' },
+                    { symbol: '🎋🎋🎋🎋🎋🎋', label: '6 Bam' },
+                    { symbol: '🎋🎋🎋🎋🎋🎋🎋', label: '7 Bam' },
+                    { symbol: '🎋🎋🎋🎋🎋🎋🎋🎋', label: '8 Bam' },
+                    { symbol: '南', label: 'South' },
+                    { symbol: '南', label: 'South' },
+                    { symbol: '南', label: 'South' },
+                    { symbol: '二萬', label: '2 Char' },
+                    { symbol: '二萬', label: '2 Char' },
+                    { symbol: '二萬', label: '2 Char' },
+                    { symbol: '⚫⚫⚫⚫', label: '4 Dot' }
+                ],
+                options: [
+                    { symbol: '⚫⚫⚫⚫', label: '4 Dot', correct: true },
+                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot', correct: false },
+                    { symbol: '南', label: 'South', correct: false }
+                ],
+                explanation: 'You need another 4 Dot to complete the pair!'
+            }
+        ];
+
+        let currentScenario = 0;
+
+        function initWinningHandPractice() {
+            const currentHand = document.getElementById('currentHand');
+            const winningTileOptions = document.getElementById('winningTileOptions');
+
+            if (!currentHand || !winningTileOptions) return;
+
+            const scenario = winningHandScenarios[currentScenario];
+
+            // Display current hand
+            currentHand.innerHTML = '';
+            scenario.hand.forEach(tile => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                if (tile.style) tileElement.setAttribute('style', tile.style);
+                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                currentHand.appendChild(tileElement);
+            });
+
+            // Display options
+            winningTileOptions.innerHTML = '';
+            scenario.options.forEach((tile, index) => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                if (tile.style) tileElement.setAttribute('style', tile.style);
+                tileElement.dataset.correct = tile.correct;
+                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                tileElement.onclick = () => checkWinningTile(tileElement, tile.correct, scenario.explanation);
+                tileElement.setAttribute('role', 'button');
+                tileElement.setAttribute('aria-label', `${tile.label} tile option`);
+                tileElement.setAttribute('tabindex', '0');
+                winningTileOptions.appendChild(tileElement);
+            });
+        }
+
+        function checkWinningTile(element, isCorrect, explanation) {
+            const feedback = document.getElementById('winHandFeedback');
+            feedback.classList.remove('show', 'success', 'error');
+
+            // Disable all option tiles
+            document.querySelectorAll('#winningTileOptions .tile').forEach(tile => {
+                tile.onclick = null;
+                tile.style.cursor = 'default';
+            });
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                feedback.textContent = `Correct! ${explanation}`;
+                feedback.classList.add('show', 'success');
+                document.getElementById('winHandNextBtn').disabled = false;
+            } else {
+                element.classList.add('incorrect');
+                feedback.textContent = `Not quite. ${explanation}`;
+                feedback.classList.add('show', 'error');
+                setTimeout(() => {
+                    element.classList.remove('incorrect');
+                    // Re-enable tiles
+                    document.querySelectorAll('#winningTileOptions .tile').forEach(tile => {
+                        tile.style.cursor = 'pointer';
+                        const isCorrectTile = tile.dataset.correct === 'true';
+                        const scenario = winningHandScenarios[currentScenario];
+                        tile.onclick = () => checkWinningTile(tile, isCorrectTile, scenario.explanation);
+                    });
+                }, 1500);
+            }
+        }
+
+        function resetWinningHandPractice() {
+            currentScenario = (currentScenario + 1) % winningHandScenarios.length;
+            document.getElementById('winHandFeedback').classList.remove('show');
+            document.getElementById('winHandNextBtn').disabled = true;
+            initWinningHandPractice();
+        }
+
+        // Initialize exercises when switching to their lessons
+        const originalSwitchLesson = switchLesson;
+        function switchLesson(lessonNum) {
+            originalSwitchLesson(lessonNum);
+            if (lessonNum === 8) initPungPractice();
+            if (lessonNum === 9) initChowPractice();
+            if (lessonNum === 12) initWinningHandPractice();
+        }
+    </script>
+</body>
+</html>
