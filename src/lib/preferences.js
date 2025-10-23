@@ -200,7 +200,16 @@ class PreferencesManager {
     import(json) {
         try {
             const imported = JSON.parse(json);
-            this.setMultiple(imported);
+
+            // Validate against known preference keys
+            const validated = {};
+            Object.keys(this.defaults).forEach(key => {
+                if (key in imported && typeof imported[key] === typeof this.defaults[key]) {
+                    validated[key] = imported[key];
+                }
+            });
+
+            this.setMultiple(validated);
         } catch (error) {
             console.error('Error importing preferences:', error);
         }

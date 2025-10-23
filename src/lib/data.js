@@ -41,6 +41,7 @@ class DataManager {
      * Set value in storage
      * @param {string} key
      * @param {*} value
+     * @returns {boolean} Success status
      */
     set(key, value) {
         const fullKey = this.prefix + key;
@@ -49,8 +50,15 @@ class DataManager {
             const serialized = JSON.stringify(value);
             this.storage.setItem(fullKey, serialized);
             this.cache.set(fullKey, value);
+            return true;
         } catch (error) {
-            console.error(`Error writing ${key}:`, error);
+            if (error.name === 'QuotaExceededError') {
+                console.error('Storage quota exceeded. Unable to save data.');
+                // Could implement LRU cache cleanup here in future
+            } else {
+                console.error(`Error writing ${key}:`, error);
+            }
+            return false;
         }
     }
 

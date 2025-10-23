@@ -17,6 +17,8 @@ class MahjongController {
         this.ai = null;
         this.listeners = new Map();
         this.state = null;
+        this.aiMoveTimeout = null;
+        this.autoSaveInterval = null;
 
         this.initialize();
     }
@@ -156,9 +158,17 @@ class MahjongController {
             return;
         }
 
+        // Clear any existing timeout
+        if (this.aiMoveTimeout) {
+            clearTimeout(this.aiMoveTimeout);
+        }
+
         // Delay AI move for better UX
-        setTimeout(() => {
-            if (this.state.gamePhase !== 'playing') return;
+        this.aiMoveTimeout = setTimeout(() => {
+            if (this.state.gamePhase !== 'playing') {
+                this.aiMoveTimeout = null;
+                return;
+            }
 
             this.ai.makeMove(this.engine, playerIndex);
 
@@ -166,6 +176,8 @@ class MahjongController {
             const nextPlayer = this.state.currentPlayer;
             if (this.state.players[nextPlayer]?.isAI) {
                 this.makeAIMove(nextPlayer);
+            } else {
+                this.aiMoveTimeout = null;
             }
         }, 800 + Math.random() * 400);
     }
@@ -314,6 +326,12 @@ class MahjongController {
     destroy() {
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+
+        if (this.aiMoveTimeout) {
+            clearTimeout(this.aiMoveTimeout);
+            this.aiMoveTimeout = null;
         }
 
         this.listeners.clear();

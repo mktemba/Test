@@ -323,6 +323,10 @@ class MahjongEngine {
 
     // Draw a tile from the wall
     drawTile(playerIndex) {
+        if (playerIndex < 0 || playerIndex >= this.state.players.length) {
+            throw new Error('Invalid player index');
+        }
+
         if (this.state.wall.length === 0) {
             this.emit('wallEmpty', {});
             return null;
@@ -332,7 +336,7 @@ class MahjongEngine {
         this.state.players[playerIndex].hand.push(tile);
         this.state.players[playerIndex].hand = HandAnalyzer.sortHand(this.state.players[playerIndex].hand);
 
-        this.emit('tilDrawn', { playerIndex, tile });
+        this.emit('tileDrawn', { playerIndex, tile });
         this.recordHistory('draw', { playerIndex, tileId: tile.id });
 
         return tile;
