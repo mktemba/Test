@@ -337,6 +337,58 @@
             margin-bottom: 10px;
             line-height: 1.6;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+                max-height: 200px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .lesson-content h2 {
+                font-size: 1.5em;
+            }
+
+            .tile {
+                width: 50px;
+                height: 70px;
+                font-size: 1.4em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Accessibility */
+        button:focus,
+        .tile:focus,
+        .lesson-item:focus {
+            outline: 3px solid #ff9800;
+            outline-offset: 2px;
+        }
+
+        .tile {
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -406,7 +458,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-primary" onclick="nextLesson()">Start Learning →</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Start the first lesson">Start Learning →</button>
                     </div>
                 </div>
 
@@ -444,8 +496,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" onclick="nextLesson()">Next Lesson →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
                     </div>
                 </div>
 
@@ -489,8 +541,8 @@
                     <p>Honor tiles don't have numbers and can only form sets with identical tiles (unlike suited tiles which can form sequences).</p>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" onclick="nextLesson()">Next Lesson →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
                     </div>
                 </div>
 
@@ -540,8 +592,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" onclick="nextLesson()">Next Lesson →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
                     </div>
                 </div>
 
@@ -597,8 +649,8 @@
                     <p>When you complete this pattern, you declare "Mahjong!" and win the hand!</p>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" onclick="nextLesson()">Next Lesson →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to next lesson">Next Lesson →</button>
                     </div>
                 </div>
 
@@ -647,8 +699,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" onclick="nextLesson()">Practice →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Go to practice exercises">Practice →</button>
                     </div>
                 </div>
 
@@ -659,13 +711,13 @@
 
                     <div class="interactive-area">
                         <h3>Find the matching pairs:</h3>
-                        <div class="tile-display" id="practiceArea">
+                        <div class="tile-display" id="practiceArea" role="group" aria-label="Mahjong tiles practice area">
                             <!-- Tiles will be added by JavaScript -->
                         </div>
-                        <div class="feedback" id="feedback"></div>
+                        <div class="feedback" id="feedback" role="alert" aria-live="polite"></div>
                         <div class="button-group">
-                            <button class="btn-primary" onclick="checkPairs()">Check Answer</button>
-                            <button class="btn-secondary" onclick="resetPractice()">Try Again</button>
+                            <button class="btn-primary" onclick="checkPairs()" aria-label="Check your selected pairs">Check Answer</button>
+                            <button class="btn-secondary" onclick="resetPractice()" aria-label="Reset practice and try again">Try Again</button>
                         </div>
                     </div>
 
@@ -675,8 +727,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-secondary" onclick="previousLesson()">← Previous</button>
-                        <button class="btn-primary" id="completeBtn" onclick="completeLesson()" disabled>Complete Tutorial →</button>
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" id="completeBtn" onclick="completeLesson()" disabled aria-label="Complete the tutorial">Complete Tutorial →</button>
                     </div>
                 </div>
             </div>
@@ -781,6 +833,15 @@
                 tileElement.dataset.type = tile.type;
                 tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
                 tileElement.onclick = () => selectTile(tileElement);
+                tileElement.setAttribute('role', 'button');
+                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('tabindex', '0');
+                tileElement.onkeypress = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectTile(tileElement);
+                    }
+                };
                 practiceArea.appendChild(tileElement);
             });
         }
@@ -801,6 +862,15 @@
                 selectedTiles.push(tileId);
             }
         }
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentLesson < totalLessons) {
+                nextLesson();
+            } else if (e.key === 'ArrowLeft' && currentLesson > 1) {
+                previousLesson();
+            }
+        });
 
         function checkPairs() {
             const feedback = document.getElementById('feedback');
@@ -843,14 +913,15 @@
                 correctPairs = 4;
             } else if (allPairs) {
                 // Correct pairs but not all
+                const pairsFound = selectedTiles.length / 2;
                 document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
                 feedback.textContent = 'Good job! But there are more pairs to find. Keep going!';
                 feedback.classList.add('show', 'success');
+                correctPairs += pairsFound;
                 selectedTiles = [];
-                correctPairs += selectedTiles.length / 2;
             } else {
                 // Not valid pairs
                 document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
