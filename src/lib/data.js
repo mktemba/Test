@@ -54,11 +54,26 @@ class DataManager {
         } catch (error) {
             if (error.name === 'QuotaExceededError') {
                 console.error('Storage quota exceeded. Unable to save data.');
-                // Could implement LRU cache cleanup here in future
+                this.emit('storageQuotaExceeded', { key, error });
+                // TODO: Implement LRU cache cleanup or user notification
+                return false;
             } else {
                 console.error(`Error writing ${key}:`, error);
+                return false;
             }
-            return false;
+        }
+    }
+
+    /**
+     * Event emission for storage errors
+     * @param {string} event
+     * @param {Object} data
+     */
+    emit(event, data) {
+        // Simple event emission for storage errors
+        // Can be extended with proper event listener system if needed
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+            window.dispatchEvent(new CustomEvent(`mahjong_${event}`, { detail: data }));
         }
     }
 
