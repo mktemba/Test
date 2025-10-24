@@ -323,6 +323,11 @@ class MahjongEngine {
 
     // Draw a tile from the wall
     drawTile(playerIndex) {
+        // Validate playerIndex
+        if (!Number.isInteger(playerIndex) || playerIndex < 0 || playerIndex >= this.state.players.length) {
+            throw new Error(`Invalid player index: ${playerIndex}. Must be between 0 and ${this.state.players.length - 1}`);
+        }
+
         if (this.state.wall.length === 0) {
             this.emit('wallEmpty', {});
             return null;
@@ -332,7 +337,7 @@ class MahjongEngine {
         this.state.players[playerIndex].hand.push(tile);
         this.state.players[playerIndex].hand = HandAnalyzer.sortHand(this.state.players[playerIndex].hand);
 
-        this.emit('tilDrawn', { playerIndex, tile });
+        this.emit('tileDrawn', { playerIndex, tile });
         this.recordHistory('draw', { playerIndex, tileId: tile.id });
 
         return tile;
@@ -340,10 +345,16 @@ class MahjongEngine {
 
     // Discard a tile
     discardTile(playerIndex, tileIndex) {
+        // Validate playerIndex
+        if (!Number.isInteger(playerIndex) || playerIndex < 0 || playerIndex >= this.state.players.length) {
+            throw new Error(`Invalid player index: ${playerIndex}. Must be between 0 and ${this.state.players.length - 1}`);
+        }
+
         const player = this.state.players[playerIndex];
 
-        if (tileIndex < 0 || tileIndex >= player.hand.length) {
-            throw new Error('Invalid tile index');
+        // Validate tileIndex
+        if (!Number.isInteger(tileIndex) || tileIndex < 0 || tileIndex >= player.hand.length) {
+            throw new Error(`Invalid tile index: ${tileIndex}. Must be between 0 and ${player.hand.length - 1}`);
         }
 
         const tile = player.hand.splice(tileIndex, 1)[0];

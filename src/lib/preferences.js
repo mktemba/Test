@@ -194,13 +194,68 @@ class PreferencesManager {
     }
 
     /**
+     * Validate a preference value against known valid values
+     * @param {string} key
+     * @param {*} value
+     * @returns {boolean}
+     */
+    isValidValue(key, value) {
+        // Get valid values from CONFIG if available, otherwise use inline validation
+        const validValues = typeof CONFIG !== 'undefined' && CONFIG.VALID_PREFERENCES
+            ? CONFIG.VALID_PREFERENCES[key]
+            : null;
+
+        if (!validValues) {
+            // Fallback: just check type matches default
+            return typeof value === typeof this.defaults[key];
+        }
+
+        return validValues.includes(value);
+    }
+
+    /**
+     * Sanitize string to prevent XSS
+     * @param {string} str
+     * @returns {string}
+     */
+    sanitizeString(str) {
+        if (typeof str !== 'string') return str;
+
+        // Basic XSS prevention: remove script tags and common attack vectors
+        return str
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+\s*=/gi, '')
+            .substring(0, typeof CONFIG !== 'undefined' ? CONFIG.MAX_STRING_LENGTH : 10000);
+    }
+
+    /**
      * Import preferences from backup
      * @param {string} json
      */
     import(json) {
         try {
             const imported = JSON.parse(json);
-            this.setMultiple(imported);
+
+            // Validate and sanitize imported values
+            const validated = {};
+            Object.keys(this.defaults).forEach(key => {
+                if (key in imported) {
+                    const value = imported[key];
+
+                    // Sanitize strings
+                    const sanitized = typeof value === 'string' ? this.sanitizeString(value) : value;
+
+                    // Validate against known valid values
+                    if (this.isValidValue(key, sanitized)) {
+                        validated[key] = sanitized;
+                    } else {
+                        console.warn(`Invalid value for preference ${key}: ${sanitized}, using default`);
+                    }
+                }
+            });
+
+            this.setMultiple(validated);
         } catch (error) {
             console.error('Error importing preferences:', error);
         }

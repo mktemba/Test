@@ -41,6 +41,7 @@ class DataManager {
      * Set value in storage
      * @param {string} key
      * @param {*} value
+     * @returns {boolean} Success status
      */
     set(key, value) {
         const fullKey = this.prefix + key;
@@ -49,8 +50,30 @@ class DataManager {
             const serialized = JSON.stringify(value);
             this.storage.setItem(fullKey, serialized);
             this.cache.set(fullKey, value);
+            return true;
         } catch (error) {
-            console.error(`Error writing ${key}:`, error);
+            if (error.name === 'QuotaExceededError') {
+                console.error('Storage quota exceeded. Unable to save data.');
+                this.emit('storageQuotaExceeded', { key, error });
+                // TODO: Implement LRU cache cleanup or user notification
+                return false;
+            } else {
+                console.error(`Error writing ${key}:`, error);
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Event emission for storage errors
+     * @param {string} event
+     * @param {Object} data
+     */
+    emit(event, data) {
+        // Simple event emission for storage errors
+        // Can be extended with proper event listener system if needed
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+            window.dispatchEvent(new CustomEvent(`mahjong_${event}`, { detail: data }));
         }
     }
 

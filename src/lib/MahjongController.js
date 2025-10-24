@@ -10,13 +10,18 @@ class MahjongController {
             playerCount: 4,
             enableAI: true,
             difficulty: 'medium',
-            autoSave: true
+            autoSave: true,
+            autoSaveInterval: typeof CONFIG !== 'undefined' ? CONFIG.AUTOSAVE_INTERVAL_MS : 30000,
+            aiMoveMinDelay: typeof CONFIG !== 'undefined' ? CONFIG.AI_MOVE_MIN_DELAY_MS : 800,
+            aiMoveMaxDelay: typeof CONFIG !== 'undefined' ? CONFIG.AI_MOVE_MAX_DELAY_MS : 1200
         }, config);
 
         this.engine = null;
         this.ai = null;
         this.listeners = new Map();
         this.state = null;
+        this.aiMoveTimeout = null;
+        this.autoSaveInterval = null;
 
         this.initialize();
     }
@@ -156,9 +161,22 @@ class MahjongController {
             return;
         }
 
+        // Clear any existing timeout to prevent duplicate moves
+        if (this.aiMoveTimeout) {
+            clearTimeout(this.aiMoveTimeout);
+        }
+
+        // Calculate delay using configured values
+        const minDelay = this.config.aiMoveMinDelay;
+        const maxDelay = this.config.aiMoveMaxDelay;
+        const delay = minDelay + Math.random() * (maxDelay - minDelay);
+
         // Delay AI move for better UX
-        setTimeout(() => {
-            if (this.state.gamePhase !== 'playing') return;
+        this.aiMoveTimeout = setTimeout(() => {
+            if (this.state.gamePhase !== 'playing') {
+                this.aiMoveTimeout = null;
+                return;
+            }
 
             this.ai.makeMove(this.engine, playerIndex);
 
@@ -166,8 +184,10 @@ class MahjongController {
             const nextPlayer = this.state.currentPlayer;
             if (this.state.players[nextPlayer]?.isAI) {
                 this.makeAIMove(nextPlayer);
+            } else {
+                this.aiMoveTimeout = null;
             }
-        }, 800 + Math.random() * 400);
+        }, delay);
     }
 
     /**
@@ -251,11 +271,12 @@ class MahjongController {
             clearInterval(this.autoSaveInterval);
         }
 
+        // Use configured auto-save interval
         this.autoSaveInterval = setInterval(() => {
             if (this.state.gamePhase === 'playing') {
                 this.engine.saveGame();
             }
-        }, 30000); // Save every 30 seconds
+        }, this.config.autoSaveInterval);
     }
 
     saveGame() {
@@ -314,6 +335,12 @@ class MahjongController {
     destroy() {
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+
+        if (this.aiMoveTimeout) {
+            clearTimeout(this.aiMoveTimeout);
+            this.aiMoveTimeout = null;
         }
 
         this.listeners.clear();
