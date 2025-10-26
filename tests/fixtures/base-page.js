@@ -7,13 +7,14 @@ class MahjongBasePage {
     this.page = page;
   }
 
-  // Navigation elements
+  // Navigation elements - use visible button in active lesson
   get nextButton() {
-    return this.page.locator('button:has-text("Next")');
+    // Find the Next button (not Check or other buttons)
+    return this.page.locator('.lesson-content.active .button-group button.btn-primary:has-text("Next"), .lesson-content.active .button-group button.btn-primary:has-text("Start")').first();
   }
 
   get previousButton() {
-    return this.page.locator('button:has-text("Previous")');
+    return this.page.locator('.lesson-content.active .button-group button.btn-secondary').first();
   }
 
   // Progress elements
@@ -40,24 +41,24 @@ class MahjongBasePage {
   }
 
   getLessonContent(lessonNumber) {
-    return this.page.locator(`#lesson${lessonNumber}`);
+    return this.page.locator(`.lesson-content[data-lesson="${lessonNumber}"]`);
   }
 
   // Practice exercises
   get pairsPractice() {
-    return this.page.locator('#pairsPractice');
+    return this.page.locator('.lesson-content[data-lesson="7"] #practiceArea');
   }
 
   get pungsPractice() {
-    return this.page.locator('#pungsPractice');
+    return this.page.locator('.lesson-content[data-lesson="8"] #pungPracticeArea');
   }
 
   get chowsPractice() {
-    return this.page.locator('#chowsPractice');
+    return this.page.locator('.lesson-content[data-lesson="9"] #chowPracticeArea');
   }
 
   get winningHandPractice() {
-    return this.page.locator('#winningHandPractice');
+    return this.page.locator('.lesson-content[data-lesson="12"] #currentHand');
   }
 
   // Helper methods

@@ -24,7 +24,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should have clickable tiles', async () => {
-      const tiles = page.locator('#pairsPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile');
       const count = await tiles.count();
       expect(count).toBeGreaterThan(0);
 
@@ -34,7 +34,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should allow selecting pairs of tiles', async () => {
-      const tiles = page.locator('#pairsPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile');
 
       // Select first two tiles
       await tiles.nth(0).click();
@@ -53,8 +53,8 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should show feedback after checking answer', async () => {
-      const tiles = page.locator('#pairsPractice .tile');
-      const checkBtn = page.locator('button:has-text("Check")');
+      const tiles = page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile');
+      const checkBtn = page.locator('.lesson-content[data-lesson="7"] button:has-text("Check")');
 
       // Select some tiles
       await tiles.nth(0).click();
@@ -67,19 +67,19 @@ test.describe('Mahjong App - Practice Exercises', () => {
       await page.waitForTimeout(500);
 
       // Check if feedback message appears (could be success or error)
-      const feedback = page.locator('.feedback, .message, .alert');
+      const feedback = page.locator('.lesson-content[data-lesson="7"] .feedback, .lesson-content[data-lesson="7"] #feedback');
       const feedbackCount = await feedback.count();
       expect(feedbackCount).toBeGreaterThanOrEqual(0); // Feedback may or may not appear
     });
 
     test('should have try again button', async () => {
-      const tryAgainBtn = page.locator('button:has-text("Try Again")');
+      const tryAgainBtn = page.locator('.lesson-content[data-lesson="7"] button:has-text("Try Again")');
       await expect(tryAgainBtn).toBeVisible();
     });
 
     test('should reset selection on try again', async () => {
-      const tiles = page.locator('#pairsPractice .tile');
-      const tryAgainBtn = page.locator('button:has-text("Try Again")');
+      const tiles = page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile');
+      const tryAgainBtn = page.locator('.lesson-content[data-lesson="7"] button:has-text("Try Again")');
 
       // Select tiles
       await tiles.nth(0).click();
@@ -90,7 +90,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
       await page.waitForTimeout(300);
 
       // Check if tiles are deselected
-      const selectedCount = await page.locator('#pairsPractice .tile.selected').count();
+      const selectedCount = await page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile.selected').count();
       expect(selectedCount).toBe(0);
     });
   });
@@ -106,7 +106,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should allow selecting three tiles for a pung', async () => {
-      const tiles = page.locator('#pungsPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="8"] #pungPracticeArea .tile');
       const count = await tiles.count();
 
       if (count >= 3) {
@@ -114,14 +114,14 @@ test.describe('Mahjong App - Practice Exercises', () => {
         await tiles.nth(1).click();
         await tiles.nth(2).click();
 
-        const selectedCount = await page.locator('#pungsPractice .tile.selected').count();
+        const selectedCount = await page.locator('.lesson-content[data-lesson="8"] #pungPracticeArea .tile.selected').count();
         expect(selectedCount).toBe(3);
       }
     });
 
     test('should have check and try again buttons', async () => {
-      const checkBtn = page.locator('#pungsPractice button:has-text("Check")');
-      const tryAgainBtn = page.locator('#pungsPractice button:has-text("Try Again")');
+      const checkBtn = page.locator('.lesson-content[data-lesson="8"] button:has-text("Check")');
+      const tryAgainBtn = page.locator('.lesson-content[data-lesson="8"] button:has-text("Try Again")');
 
       await expect(checkBtn).toBeVisible();
       await expect(tryAgainBtn).toBeVisible();
@@ -139,7 +139,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should allow selecting three consecutive tiles', async () => {
-      const tiles = page.locator('#chowsPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="9"] #chowPracticeArea .tile');
       const count = await tiles.count();
 
       if (count >= 3) {
@@ -147,7 +147,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
         await tiles.nth(1).click();
         await tiles.nth(2).click();
 
-        const selectedCount = await page.locator('#chowsPractice .tile.selected').count();
+        const selectedCount = await page.locator('.lesson-content[data-lesson="9"] #chowPracticeArea .tile.selected').count();
         expect(selectedCount).toBe(3);
       }
     });
@@ -164,14 +164,14 @@ test.describe('Mahjong App - Practice Exercises', () => {
     });
 
     test('should have tiles to arrange into sets', async () => {
-      const tiles = page.locator('#winningHandPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="12"] #currentHand .tile, .lesson-content[data-lesson="12"] #winningTileOptions .tile');
       const count = await tiles.count();
       expect(count).toBeGreaterThan(0);
     });
 
-    test('should allow marking multiple sets', async () => {
-      const checkBtn = page.locator('#winningHandPractice button:has-text("Check")');
-      await expect(checkBtn).toBeVisible();
+    test('should allow selecting winning tile', async () => {
+      const winningTiles = page.locator('.lesson-content[data-lesson="12"] #winningTileOptions .tile');
+      await expect(winningTiles.first()).toBeVisible();
     });
   });
 
@@ -207,7 +207,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     test('tiles should have proper ARIA labels', async () => {
       await basePage.navigateToLesson(7);
 
-      const tiles = page.locator('#pairsPractice .tile');
+      const tiles = page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile');
       const firstTile = tiles.first();
 
       // Check for aria-label or title
@@ -220,7 +220,7 @@ test.describe('Mahjong App - Practice Exercises', () => {
     test('buttons should be keyboard accessible', async () => {
       await basePage.navigateToLesson(7);
 
-      const checkBtn = page.locator('button:has-text("Check")');
+      const checkBtn = page.locator('.lesson-content[data-lesson="7"] button:has-text("Check")');
 
       // Focus the button
       await checkBtn.focus();
