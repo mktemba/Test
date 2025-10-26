@@ -8,10 +8,19 @@ const { defineConfig, devices } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests/e2e',
 
-  // Maximum time one test can run
+  /**
+   * Maximum time one test can run (30 seconds)
+   * This is sufficient for navigation and interaction tests while preventing
+   * tests from hanging indefinitely. Increased from default 15s to accommodate
+   * slower CI environments and practice exercise interactions.
+   */
   timeout: 30 * 1000,
 
-  // Assertions timeout
+  /**
+   * Assertions timeout (5 seconds)
+   * Standard timeout for expect() assertions. Most DOM queries should resolve
+   * within 1-2 seconds; this allows buffer for slower environments.
+   */
   expect: {
     timeout: 5000
   },
@@ -78,7 +87,11 @@ module.exports = defineConfig({
     // },
   ],
 
-  // Run local dev server before starting the tests
+  /**
+   * Run local dev server before starting the tests
+   * Timeout is set to 120 seconds to allow server startup in CI environments
+   * where resource allocation may be slower than local development.
+   */
   webServer: {
     command: 'npm run serve',
     url: 'http://localhost:8080',

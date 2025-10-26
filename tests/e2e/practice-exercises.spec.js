@@ -63,11 +63,12 @@ test.describe('Mahjong App - Practice Exercises', () => {
       // Check answer
       await checkBtn.click();
 
-      // Wait for feedback
-      await page.waitForTimeout(500);
+      // Wait for feedback element to appear
+      const feedback = page.locator('.lesson-content[data-lesson="7"] #feedback');
+      await feedback.waitFor({ state: 'visible', timeout: 2000 }).catch(() => {
+        // Feedback might not always appear, that's okay
+      });
 
-      // Check if feedback message appears (could be success or error)
-      const feedback = page.locator('.lesson-content[data-lesson="7"] .feedback, .lesson-content[data-lesson="7"] #feedback');
       const feedbackCount = await feedback.count();
       expect(feedbackCount).toBeGreaterThanOrEqual(0); // Feedback may or may not appear
     });
@@ -87,7 +88,11 @@ test.describe('Mahjong App - Practice Exercises', () => {
 
       // Click try again
       await tryAgainBtn.click();
-      await page.waitForTimeout(300);
+
+      // Wait for tiles to be deselected
+      await page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile.selected').first().waitFor({ state: 'detached', timeout: 2000 }).catch(() => {
+        // Tiles might already be deselected
+      });
 
       // Check if tiles are deselected
       const selectedCount = await page.locator('.lesson-content[data-lesson="7"] #practiceArea .tile.selected').count();

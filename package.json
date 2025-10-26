@@ -1,8 +1,8 @@
 {
-  "name": "test",
+  "name": "mahjong-learning-app",
   "version": "1.0.0",
-  "description": "Pactice to fiddle around with Markdown",
-  "main": "mahjong-game-engine.js",
+  "description": "Interactive Mahjong learning application with comprehensive e2e testing",
+  "main": "learn-mahjong.html",
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",

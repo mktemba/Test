@@ -79,7 +79,6 @@ test.describe('Mahjong App - Persistence & Preferences', () => {
       // Navigate through several lessons
       for (let i = 0; i < 3; i++) {
         await basePage.clickNext();
-        await page.waitForTimeout(300);
       }
 
       const updatedProgress = await basePage.getProgressPercentage();

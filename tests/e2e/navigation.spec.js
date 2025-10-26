@@ -20,7 +20,8 @@ test.describe('Mahjong App - Navigation', () => {
     // Check for no JavaScript errors
     const errors = [];
     page.on('pageerror', error => errors.push(error));
-    await page.waitForTimeout(1000);
+    // Wait for page to be fully loaded
+    await page.waitForLoadState('networkidle');
     expect(errors).toHaveLength(0);
   });
 
@@ -69,15 +70,11 @@ test.describe('Mahjong App - Navigation', () => {
   test('should have working keyboard navigation', async () => {
     // Press right arrow to go to next lesson
     await page.keyboard.press('ArrowRight');
-    await page.waitForTimeout(300);
-
     const lesson2 = basePage.getLessonContent(2);
     await expect(lesson2).toHaveClass(/active/);
 
     // Press left arrow to go back
     await page.keyboard.press('ArrowLeft');
-    await page.waitForTimeout(300);
-
     const lesson1 = basePage.getLessonContent(1);
     await expect(lesson1).toHaveClass(/active/);
   });

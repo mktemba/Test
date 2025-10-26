@@ -70,16 +70,22 @@ class MahjongBasePage {
   async navigateToLesson(lessonNumber) {
     const sidebarItem = this.getSidebarLesson(lessonNumber);
     await sidebarItem.click();
-    await this.page.waitForTimeout(300); // Wait for transition
+    // Wait for lesson transition animations (~300ms for CSS transitions)
+    // This is a bounded wait for visual transitions, not a test synchronization mechanism
+    await this.page.waitForTimeout(300);
   }
 
   async clickNext() {
     await this.nextButton.click();
+    // Wait for lesson transition animations (~300ms for CSS transitions)
+    // This is a bounded wait for visual transitions, not a test synchronization mechanism
     await this.page.waitForTimeout(300);
   }
 
   async clickPrevious() {
     await this.previousButton.click();
+    // Wait for lesson transition animations (~300ms for CSS transitions)
+    // This is a bounded wait for visual transitions, not a test synchronization mechanism
     await this.page.waitForTimeout(300);
   }
 
