@@ -1780,11 +1780,20 @@
             }
         };
 
+        // Store scenario cards event handler reference for cleanup
+        let scenarioCardsHandler = null;
+
         // Load scenarios
         window.loadScenarios = function() {
             if (!learningSystem || !learningSystem.scenarioEngine) return;
 
             const scenariosList = document.getElementById('scenariosList');
+
+            // Clean up old event listener before clearing HTML
+            if (scenarioCardsHandler) {
+                scenariosList.removeEventListener('click', scenarioCardsHandler);
+            }
+
             scenariosList.innerHTML = '<div class="loading">Loading scenarios</div>';
 
             setTimeout(() => {
@@ -1799,14 +1808,28 @@
                 scenarios.forEach(scenario => {
                     const card = document.createElement('div');
                     card.className = 'scenario-card';
+                    card.dataset.scenarioId = scenario.id; // Store scenario ID in data attribute
                     card.innerHTML = `
                         <h3>${scenario.title}</h3>
                         <span class="scenario-difficulty ${scenario.difficulty}">${scenario.difficulty}</span>
                         <p>${scenario.description}</p>
                     `;
-                    card.onclick = () => playScenario(scenario.id);
+                    // No inline onclick - using delegation below
                     scenariosList.appendChild(card);
                 });
+
+                // Event delegation: single handler for all scenario cards
+                scenarioCardsHandler = function(e) {
+                    const card = e.target.closest('.scenario-card');
+                    if (!card) return;
+
+                    const scenarioId = card.dataset.scenarioId;
+                    if (scenarioId) {
+                        playScenario(scenarioId);
+                    }
+                };
+
+                scenariosList.addEventListener('click', scenarioCardsHandler);
             }, 500);
         };
 
@@ -2680,12 +2703,10 @@
 
                 setTimeout(() => {
                     element.classList.remove('incorrect');
-                    // Re-enable tiles
+                    // Re-enable tiles (event delegation handler already attached to parent)
                     document.querySelectorAll('#winningTileOptions .mahjong-tile').forEach(tile => {
                         tile.style.cursor = 'pointer';
-                        const isCorrectTile = tile.dataset.correct === 'true';
-                        const scenario = winningHandScenarios[currentScenario];
-                        tile.onclick = () => checkWinningTile(tile, isCorrectTile, scenario.explanation);
+                        // No need to re-attach onclick - winHandOptionsHandler already handles clicks
                     });
                 }, 1500);
             }
