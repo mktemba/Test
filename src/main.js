@@ -262,17 +262,20 @@ class MahjongApp {
         // This is the integration point between the modular architecture
         // and the existing tutorial code
 
-        if (typeof initPractice !== 'undefined' && lessonNum === 7) {
-            initPractice();
-        }
-        if (typeof initPungPractice !== 'undefined' && lessonNum === 8) {
-            initPungPractice();
-        }
-        if (typeof initChowPractice !== 'undefined' && lessonNum === 9) {
-            initChowPractice();
-        }
-        if (typeof initWinningHandPractice !== 'undefined' && lessonNum === 12) {
-            initWinningHandPractice();
+        // Use waitForTileRenderer to ensure TileRenderer is loaded before initializing
+        if (typeof window.waitForTileRenderer !== 'undefined') {
+            if (typeof initPractice !== 'undefined' && lessonNum === 7) {
+                window.waitForTileRenderer(initPractice, 'initPractice-L7');
+            }
+            if (typeof initPungPractice !== 'undefined' && lessonNum === 8) {
+                window.waitForTileRenderer(initPungPractice, 'initPungPractice-L8');
+            }
+            if (typeof initChowPractice !== 'undefined' && lessonNum === 9) {
+                window.waitForTileRenderer(initChowPractice, 'initChowPractice-L9');
+            }
+            if (typeof initWinningHandPractice !== 'undefined' && lessonNum === 12) {
+                window.waitForTileRenderer(initWinningHandPractice, 'initWinningHandPractice-L12');
+            }
         }
     }
 

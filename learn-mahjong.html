@@ -1362,6 +1362,27 @@
     <script type="module" src="src/lib/ProgressAnalyzer.js"></script>
     <script type="module" src="src/lib/EnhancedLearningIntegration.js"></script>
 
+    <!-- Define waitForTileRenderer before main.js loads -->
+    <script>
+        window.waitForTileRenderer = function(callback, callbackName = 'callback') {
+            if (window.tileRenderer && typeof window.tileRenderer.createTileElement === 'function') {
+                try {
+                    console.log(`[Debug] Calling ${callbackName}`);
+                    callback();
+                    console.log(`[Debug] ${callbackName} completed`);
+                } catch (e) {
+                    console.error(`[Error] in ${callbackName}:`, e);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'position:fixed;top:0;left:0;background:red;color:white;padding:10px;z-index:9999';
+                    errorDiv.textContent = `Error in ${callbackName}: ${e.message}`;
+                    document.body.appendChild(errorDiv);
+                }
+            } else {
+                setTimeout(() => window.waitForTileRenderer(callback, callbackName), 50);
+            }
+        };
+    </script>
+
     <script src="src/main.js"></script>
 
     <script type="module">
@@ -2019,24 +2040,6 @@
         }
 
         // Initialize practice when page loads - wait for tileRenderer
-        window.waitForTileRenderer = function(callback, callbackName = 'callback') {
-            if (window.tileRenderer && typeof window.tileRenderer.createTileElement === 'function') {
-                try {
-                    console.log(`[Debug] Calling ${callbackName}`);
-                    callback();
-                    console.log(`[Debug] ${callbackName} completed`);
-                } catch (e) {
-                    console.error(`[Error] in ${callbackName}:`, e);
-                    // Also show error in DOM for test visibility
-                    const errorDiv = document.createElement('div');
-                    errorDiv.style.cssText = 'position:fixed;top:0;left:0;background:red;color:white;padding:10px;z-index:9999';
-                    errorDiv.textContent = `Error in ${callbackName}: ${e.message}`;
-                    document.body.appendChild(errorDiv);
-                }
-            } else {
-                setTimeout(() => window.waitForTileRenderer(callback, callbackName), 50);
-            }
-        };
         window.waitForTileRenderer(initPractice, 'initPractice');
 
         // =================
