@@ -1470,7 +1470,7 @@
                 suitDisplay.innerHTML = '';
                 ['bamboo', 'character', 'dot'].forEach(suit => {
                     [1, 2, 3].forEach(num => {
-                        const tile = window.tileRenderer.createTileElement(suit, num, 'medium');
+                        const tile = window.tileRenderer.createTileElement(suit, num);
                         suitDisplay.appendChild(tile);
                     });
                 });
@@ -1481,7 +1481,7 @@
             if (dragonDisplay) {
                 dragonDisplay.innerHTML = '';
                 ['red', 'green', 'white'].forEach(dragon => {
-                    const tile = window.tileRenderer.createTileElement('dragon', dragon, 'medium');
+                    const tile = window.tileRenderer.createTileElement('dragon', dragon);
                     dragonDisplay.appendChild(tile);
                 });
             }
@@ -1491,7 +1491,7 @@
             if (windDisplay) {
                 windDisplay.innerHTML = '';
                 ['east', 'south', 'west', 'north'].forEach(wind => {
-                    const tile = window.tileRenderer.createTileElement('wind', wind, 'medium');
+                    const tile = window.tileRenderer.createTileElement('wind', wind);
                     windDisplay.appendChild(tile);
                 });
             }
@@ -1501,7 +1501,7 @@
             if (pungDisplay) {
                 pungDisplay.innerHTML = '';
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('bamboo', 3, 'medium');
+                    const tile = window.tileRenderer.createTileElement('bamboo', 3);
                     pungDisplay.appendChild(tile);
                 }
             }
@@ -1511,7 +1511,7 @@
             if (chowDisplay) {
                 chowDisplay.innerHTML = '';
                 [3, 4, 5].forEach(num => {
-                    const tile = window.tileRenderer.createTileElement('dot', num, 'medium');
+                    const tile = window.tileRenderer.createTileElement('dot', num);
                     chowDisplay.appendChild(tile);
                 });
             }
@@ -1521,7 +1521,7 @@
             if (kongDisplay) {
                 kongDisplay.innerHTML = '';
                 for (let i = 0; i < 4; i++) {
-                    const tile = window.tileRenderer.createTileElement('dragon', 'red', 'medium');
+                    const tile = window.tileRenderer.createTileElement('dragon', 'red');
                     kongDisplay.appendChild(tile);
                 }
             }
@@ -1532,31 +1532,31 @@
                 winningDisplay.innerHTML = '';
                 // Chow 1-2-3 Bamboo
                 [1, 2, 3].forEach(num => {
-                    const tile = window.tileRenderer.createTileElement('bamboo', num, 'medium');
+                    const tile = window.tileRenderer.createTileElement('bamboo', num);
                     winningDisplay.appendChild(tile);
                 });
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pung 5 Dots
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('dot', 5, 'medium');
+                    const tile = window.tileRenderer.createTileElement('dot', 5);
                     winningDisplay.appendChild(tile);
                 }
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pung 2 Characters
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('character', 2, 'medium');
+                    const tile = window.tileRenderer.createTileElement('character', 2);
                     winningDisplay.appendChild(tile);
                 }
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pung East
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('wind', 'east', 'medium');
+                    const tile = window.tileRenderer.createTileElement('wind', 'east');
                     winningDisplay.appendChild(tile);
                 }
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pair Red Dragons
                 for (let i = 0; i < 2; i++) {
-                    const tile = window.tileRenderer.createTileElement('dragon', 'red', 'medium');
+                    const tile = window.tileRenderer.createTileElement('dragon', 'red');
                     winningDisplay.appendChild(tile);
                 }
             }
@@ -1573,14 +1573,14 @@
                 ];
                 sets.forEach(set => {
                     for (let i = 0; i < 3; i++) {
-                        const tile = window.tileRenderer.createTileElement(set.suit, set.value, 'medium');
+                        const tile = window.tileRenderer.createTileElement(set.suit, set.value);
                         allPungsDisplay.appendChild(tile);
                     }
                     allPungsDisplay.appendChild(document.createElement('div')); // spacer
                 });
                 // Pair
                 for (let i = 0; i < 2; i++) {
-                    const tile = window.tileRenderer.createTileElement('character', 1, 'medium');
+                    const tile = window.tileRenderer.createTileElement('character', 1);
                     allPungsDisplay.appendChild(tile);
                 }
             }
@@ -1859,7 +1859,7 @@
             const shuffled = [...practiceTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value, 'medium');
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
@@ -2043,7 +2043,7 @@
             const shuffled = [...pungTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value, 'medium');
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
@@ -2191,7 +2191,7 @@
             const shuffled = [...chowTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value, 'medium');
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
@@ -2373,14 +2373,14 @@
             // Display current hand
             currentHand.innerHTML = '';
             scenario.hand.forEach(tile => {
-                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value, 'medium');
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 currentHand.appendChild(tileElement);
             });
 
             // Display options
             winningTileOptions.innerHTML = '';
             scenario.options.forEach((tile, index) => {
-                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value, 'medium');
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.correct = tile.correct;
                 tileElement.onclick = () => checkWinningTile(tileElement, tile.correct, scenario.explanation);
                 tileElement.setAttribute('role', 'button');
