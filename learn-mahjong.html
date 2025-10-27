@@ -1872,11 +1872,20 @@
         let selectedTiles = [];
         let correctPairs = 0;
 
+        // Store event handler reference for cleanup
+        let practiceAreaHandler = null;
+
         function initPractice() {
             const practiceArea = document.getElementById('practiceArea');
             if (!practiceArea) {
                 console.log('[Debug] practiceArea not found, skipping initPractice');
                 return;
+            }
+
+            // Clean up old event listener before re-initializing
+            if (practiceAreaHandler) {
+                practiceArea.removeEventListener('click', practiceAreaHandler);
+                practiceArea.removeEventListener('keypress', practiceAreaHandler);
             }
 
             practiceArea.innerHTML = '';
@@ -1889,18 +1898,36 @@
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
-                tileElement.onclick = () => selectTile(tileElement, tile.id);
+                // No inline event handlers - using delegation below
                 tileElement.setAttribute('role', 'button');
                 tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
-                tileElement.onkeypress = (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        selectTile(tileElement, tile.id);
-                    }
-                };
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation: single handler on parent for all tiles
+            practiceAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                // Handle keyboard events
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                // Handle click events
+                if (e.type === 'click') {
+                    selectTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', practiceAreaHandler);
+            practiceArea.addEventListener('keypress', practiceAreaHandler);
+
             console.log(`[Debug] initPractice completed, added ${shuffled.length} tiles`);
         }
 
@@ -2061,10 +2088,17 @@
         ];
 
         let selectedPungTiles = [];
+        let pungAreaHandler = null;
 
         function initPungPractice() {
             const practiceArea = document.getElementById('pungPracticeArea');
             if (!practiceArea) return;
+
+            // Clean up old event listener
+            if (pungAreaHandler) {
+                practiceArea.removeEventListener('click', pungAreaHandler);
+                practiceArea.removeEventListener('keypress', pungAreaHandler);
+            }
 
             practiceArea.innerHTML = '';
             const shuffled = [...pungTiles].sort(() => Math.random() - 0.5);
@@ -2074,12 +2108,33 @@
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
-                tileElement.onclick = () => selectPungTile(tileElement, tile.id);
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
                 tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation
+            pungAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectPungTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    selectPungTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', pungAreaHandler);
+            practiceArea.addEventListener('keypress', pungAreaHandler);
         }
 
         function selectPungTile(element, tileId) {
@@ -2209,10 +2264,17 @@
         ];
 
         let selectedChowTiles = [];
+        let chowAreaHandler = null;
 
         function initChowPractice() {
             const practiceArea = document.getElementById('chowPracticeArea');
             if (!practiceArea) return;
+
+            // Clean up old event listener
+            if (chowAreaHandler) {
+                practiceArea.removeEventListener('click', chowAreaHandler);
+                practiceArea.removeEventListener('keypress', chowAreaHandler);
+            }
 
             practiceArea.innerHTML = '';
             const shuffled = [...chowTiles].sort(() => Math.random() - 0.5);
@@ -2222,12 +2284,33 @@
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
                 tileElement.dataset.value = tile.value;
-                tileElement.onclick = () => selectChowTile(tileElement, tile.id);
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
                 tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation
+            chowAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectChowTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    selectChowTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', chowAreaHandler);
+            practiceArea.addEventListener('keypress', chowAreaHandler);
         }
 
         function selectChowTile(element, tileId) {
@@ -2388,12 +2471,19 @@
         ];
 
         let currentScenario = 0;
+        let winHandOptionsHandler = null;
 
         function initWinningHandPractice() {
             const currentHand = document.getElementById('currentHand');
             const winningTileOptions = document.getElementById('winningTileOptions');
 
             if (!currentHand || !winningTileOptions) return;
+
+            // Clean up old event listener
+            if (winHandOptionsHandler) {
+                winningTileOptions.removeEventListener('click', winHandOptionsHandler);
+                winningTileOptions.removeEventListener('keypress', winHandOptionsHandler);
+            }
 
             const scenario = winningHandScenarios[currentScenario];
 
@@ -2409,21 +2499,47 @@
             scenario.options.forEach((tile, index) => {
                 const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.correct = tile.correct;
-                tileElement.onclick = () => checkWinningTile(tileElement, tile.correct, scenario.explanation);
+                tileElement.dataset.explanation = scenario.explanation;
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
                 tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile option`);
                 tileElement.setAttribute('tabindex', '0');
                 winningTileOptions.appendChild(tileElement);
             });
+
+            // Event delegation
+            winHandOptionsHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile || !tile.dataset.correct) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        checkWinningTile(tile, tile.dataset.correct === 'true', tile.dataset.explanation);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    checkWinningTile(tile, tile.dataset.correct === 'true', tile.dataset.explanation);
+                }
+            };
+
+            winningTileOptions.addEventListener('click', winHandOptionsHandler);
+            winningTileOptions.addEventListener('keypress', winHandOptionsHandler);
         }
 
         function checkWinningTile(element, isCorrect, explanation) {
             const feedback = document.getElementById('winHandFeedback');
             feedback.classList.remove('show', 'success', 'error');
 
-            // Disable all option tiles
-            document.querySelectorAll('#winningTileOptions .mahjong-tile').forEach(tile => {
-                tile.onclick = null;
+            // Disable all option tiles by removing event handler
+            const winningTileOptions = document.getElementById('winningTileOptions');
+            if (winHandOptionsHandler && winningTileOptions) {
+                winningTileOptions.removeEventListener('click', winHandOptionsHandler);
+                winningTileOptions.removeEventListener('keypress', winHandOptionsHandler);
+            }
+            document.querySelectorAll('#winningTileOptions .tile').forEach(tile => {
                 tile.style.cursor = 'default';
             });
 
