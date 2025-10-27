@@ -73,6 +73,15 @@ class MahjongBasePage {
     // Wait for lesson transition animations (~300ms for CSS transitions)
     // This is a bounded wait for visual transitions, not a test synchronization mechanism
     await this.page.waitForTimeout(300);
+
+    // For practice lessons (7, 8, 9, 12), wait for tiles to be rendered
+    const practiceLessons = [7, 8, 9, 12];
+    if (practiceLessons.includes(lessonNumber)) {
+      // Wait for at least one tile to appear (up to 5 seconds)
+      await this.page.waitForSelector('.lesson-content.active .tile', { timeout: 5000 }).catch(() => {
+        console.warn(`[Warning] No tiles appeared for lesson ${lessonNumber} within 5 seconds`);
+      });
+    }
   }
 
   async clickNext() {
