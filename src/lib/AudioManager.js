@@ -312,22 +312,49 @@ class AudioManager {
                     gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
             }
 
-            // Track active nodes
-            this.activeNodes.add(oscillator);
-
             // Start and stop oscillator
             oscillator.start(now);
             oscillator.stop(now + duration);
 
-            // Clean up when finished
-            oscillator.onended = () => {
-                oscillator.disconnect();
-                gainNode.disconnect();
+            // Track active nodes AFTER successful start
+            this.activeNodes.add(oscillator);
+
+            // Clean up function - ensures proper cleanup in all scenarios
+            const cleanup = () => {
+                try {
+                    oscillator.disconnect();
+                    gainNode.disconnect();
+                } catch (e) {
+                    // Ignore disconnect errors if already disconnected
+                }
                 this.activeNodes.delete(oscillator);
             };
 
+            // Primary cleanup: when oscillator finishes naturally
+            oscillator.onended = cleanup;
+
+            // Backup cleanup: handle errors during playback
+            oscillator.onerror = cleanup;
+
+            // Failsafe cleanup: remove stale nodes after max duration (prevent leaks if events don't fire)
+            const maxDuration = Math.max(duration * 1000, 5000); // Max 5 seconds
+            setTimeout(() => {
+                if (this.activeNodes.has(oscillator)) {
+                    console.warn(`[AudioManager] Stale oscillator detected for ${soundId}, forcing cleanup`);
+                    cleanup();
+                }
+            }, maxDuration);
+
         } catch (error) {
             console.error(`Error generating sound ${soundId}:`, error);
+            // Ensure we don't leak nodes even if there's an error
+            this.activeNodes.delete(oscillator);
+            try {
+                if (oscillator) oscillator.disconnect();
+                if (gainNode) gainNode.disconnect();
+            } catch (e) {
+                // Ignore cleanup errors
+            }
         }
     }
 
