@@ -218,7 +218,14 @@ const GameData = {
             gamesWon: 0,
             totalScore: 0,
             bestScore: 0,
-            lessonsCompleted: []
+            lessonsCompleted: [],
+            // New fields for enhanced features
+            difficulty: 'medium',
+            totalTime: 0,
+            sessionStart: null,
+            accuracyByLesson: {},
+            scenariosCompleted: [],
+            audioEnabled: true
         });
     },
 
@@ -271,6 +278,59 @@ const GameData = {
     getCompletionPercentage(totalLessons) {
         const stats = this.getStats();
         return (stats.lessonsCompleted.length / totalLessons) * 100;
+    },
+
+    /**
+     * Get difficulty setting
+     * @returns {string}
+     */
+    getDifficulty() {
+        const stats = this.getStats();
+        return stats.difficulty || 'medium';
+    },
+
+    /**
+     * Set difficulty setting
+     * @param {string} difficulty
+     */
+    setDifficulty(difficulty) {
+        const stats = this.getStats();
+        stats.difficulty = difficulty;
+        this.saveStats(stats);
+    },
+
+    /**
+     * Track lesson accuracy
+     * @param {string} lessonId
+     * @param {number} accuracy
+     * @param {Object} details
+     */
+    trackLessonAccuracy(lessonId, accuracy, details = {}) {
+        const stats = this.getStats();
+        if (!stats.accuracyByLesson) {
+            stats.accuracyByLesson = {};
+        }
+        if (!stats.accuracyByLesson[lessonId]) {
+            stats.accuracyByLesson[lessonId] = [];
+        }
+
+        stats.accuracyByLesson[lessonId].push({
+            timestamp: Date.now(),
+            accuracy,
+            ...details
+        });
+
+        this.saveStats(stats);
+    },
+
+    /**
+     * Get accuracy for lesson
+     * @param {string} lessonId
+     * @returns {Array}
+     */
+    getLessonAccuracy(lessonId) {
+        const stats = this.getStats();
+        return (stats.accuracyByLesson && stats.accuracyByLesson[lessonId]) || [];
     }
 };
 
