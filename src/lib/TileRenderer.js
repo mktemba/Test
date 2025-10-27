@@ -780,7 +780,17 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-// Browser global export
+// ES6 module export
+export {
+    TileRenderer,
+    createRenderer,
+    TILE_SIZES,
+    CHINESE_CHARACTERS,
+    WIND_CHARACTERS,
+    DRAGON_CHARACTERS
+};
+
+// Browser global export (for non-module usage)
 if (typeof window !== 'undefined') {
     window.TileRenderer = TileRenderer;
     window.createRenderer = createRenderer;
