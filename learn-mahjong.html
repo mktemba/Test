@@ -2012,8 +2012,15 @@
             initPractice();
         }
 
-        // Initialize practice when page loads
-        initPractice();
+        // Initialize practice when page loads - wait for tileRenderer
+        function waitForTileRenderer(callback) {
+            if (window.tileRenderer) {
+                callback();
+            } else {
+                setTimeout(() => waitForTileRenderer(callback), 50);
+            }
+        }
+        waitForTileRenderer(initPractice);
 
         // =================
         // LESSON 8: Find Pungs Practice
@@ -2454,9 +2461,9 @@
         const originalSwitchLesson = switchLesson;
         switchLesson = function(lessonNum) {
             originalSwitchLesson(lessonNum);
-            if (lessonNum === 8) initPungPractice();
-            if (lessonNum === 9) initChowPractice();
-            if (lessonNum === 12) initWinningHandPractice();
+            if (lessonNum === 8) waitForTileRenderer(initPungPractice);
+            if (lessonNum === 9) waitForTileRenderer(initChowPractice);
+            if (lessonNum === 12) waitForTileRenderer(initWinningHandPractice);
         };
 
         // Load saved progress
