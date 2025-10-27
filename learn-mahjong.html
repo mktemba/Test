@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learn to Play Mahjong</title>
+
+    <!-- Enhanced Learning Module CSS -->
+    <link rel="stylesheet" href="src/lib/TileRenderer.css">
+
     <style>
         * {
             margin: 0;
@@ -35,6 +39,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -45,6 +50,79 @@
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
+        }
+
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        .difficulty-selector label {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .difficulty-selector select {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: white;
+            color: #1e3c72;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .audio-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .audio-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .audio-toggle.muted {
+            opacity: 0.6;
+        }
+
+        .mistakes-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .mistakes-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .content {
@@ -105,6 +183,7 @@
             flex: 1;
             padding: 40px;
             overflow-y: auto;
+            position: relative;
         }
 
         .lesson-content {
@@ -142,6 +221,7 @@
             justify-content: center;
         }
 
+        /* Legacy tile styles for backward compatibility */
         .tile {
             width: 60px;
             height: 80px;
@@ -338,6 +418,176 @@
             line-height: 1.6;
         }
 
+        /* Mistakes Panel */
+        .mistakes-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .mistakes-panel.open {
+            right: 0;
+        }
+
+        .mistakes-panel h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .mistakes-panel .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            padding: 5px 10px;
+        }
+
+        .mistake-summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .mistake-category {
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .mistake-count {
+            color: #f44336;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .targeted-practice-btn {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Progress Dashboard */
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        /* Scenarios Section */
+        .scenarios-section {
+            display: none;
+        }
+
+        .scenarios-section.active {
+            display: block;
+        }
+
+        .scenario-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scenario-card:hover {
+            border-color: #2196F3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .scenario-card h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .scenario-difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .scenario-difficulty.easy {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .scenario-difficulty.medium {
+            background: #bbdefb;
+            color: #1565c0;
+        }
+
+        .scenario-difficulty.hard {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+
+        .scenario-difficulty.expert {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .content {
@@ -359,6 +609,11 @@
                 font-size: 1.8em;
             }
 
+            .header-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
             .lesson-content h2 {
                 font-size: 1.5em;
             }
@@ -376,6 +631,15 @@
             button {
                 width: 100%;
             }
+
+            .mistakes-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Accessibility */
@@ -389,6 +653,24 @@
         .tile {
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
     </style>
 </head>
 <body>
@@ -396,6 +678,28 @@
         <div class="header">
             <h1>Learn to Play Mahjong</h1>
             <p>Master the ancient game of tiles through interactive lessons</p>
+
+            <!-- Enhanced Learning Controls -->
+            <div class="header-controls">
+                <div class="difficulty-selector">
+                    <label for="difficultySelect">Difficulty:</label>
+                    <select id="difficultySelect">
+                        <option value="easy">Easy (4 tiles)</option>
+                        <option value="medium" selected>Medium (7 tiles)</option>
+                        <option value="hard">Hard (9 tiles)</option>
+                        <option value="expert">Expert (13 tiles)</option>
+                    </select>
+                </div>
+
+                <button id="audioToggle" class="audio-toggle" aria-label="Toggle sound">
+                    🔊 Sound On
+                </button>
+
+                <button id="mistakesToggle" class="mistakes-toggle" aria-label="Show mistakes panel">
+                    📊 View Mistakes
+                </button>
+            </div>
+
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
@@ -455,6 +759,14 @@
                     <span class="lesson-number">Lesson 13</span>
                     Advanced: Strategy
                 </div>
+                <div class="lesson-item" data-lesson="14">
+                    <span class="lesson-number">Lesson 14</span>
+                    Game Scenarios
+                </div>
+                <div class="lesson-item" data-lesson="15">
+                    <span class="lesson-number">Dashboard</span>
+                    Your Progress
+                </div>
             </div>
 
             <div class="main-content">
@@ -471,6 +783,8 @@
                             <li>How to build winning hands</li>
                             <li>Basic gameplay and rules</li>
                             <li>Strategy and tactics</li>
+                            <li>Real game scenarios</li>
+                            <li>Track your progress with detailed analytics</li>
                         </ul>
                     </div>
 
@@ -502,16 +816,8 @@
 
                     <p>Each suit has tiles numbered from 1 to 9, and there are four identical copies of each tile in the set.</p>
 
-                    <div class="tile-display">
-                        <div class="tile">🎋<div class="tile-label">1 Bam</div></div>
-                        <div class="tile">🎋🎋<div class="tile-label">2 Bam</div></div>
-                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                        <div class="tile">萬<div class="tile-label">1 Char</div></div>
-                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
-                        <div class="tile">三萬<div class="tile-label">3 Char</div></div>
-                        <div class="tile">⚫<div class="tile-label">1 Dot</div></div>
-                        <div class="tile">⚫⚫<div class="tile-label">2 Dot</div></div>
-                        <div class="tile">⚫⚫⚫<div class="tile-label">3 Dot</div></div>
+                    <div class="tile-display" id="suitTilesDisplay">
+                        <!-- SVG tiles will be injected here by TileRenderer -->
                     </div>
 
                     <div class="info-box">
@@ -539,10 +845,8 @@
                         </ul>
                     </div>
 
-                    <div class="tile-display">
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                        <div class="tile" style="color: green;">發<div class="tile-label">Green</div></div>
-                        <div class="tile" style="border: 3px solid #2196F3;">⬜<div class="tile-label">White</div></div>
+                    <div class="tile-display" id="dragonTilesDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <div class="info-box">
@@ -555,11 +859,8 @@
                         </ul>
                     </div>
 
-                    <div class="tile-display">
-                        <div class="tile">東<div class="tile-label">East</div></div>
-                        <div class="tile">南<div class="tile-label">South</div></div>
-                        <div class="tile">西<div class="tile-label">West</div></div>
-                        <div class="tile">北<div class="tile-label">North</div></div>
+                    <div class="tile-display" id="windTilesDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <p>Honor tiles don't have numbers and can only form sets with identical tiles (unlike suited tiles which can form sequences).</p>
@@ -579,31 +880,24 @@
                         <h4>1. Pung (Triplet)</h4>
                         <p>Three identical tiles</p>
                     </div>
-                    <div class="tile-display">
-                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
+                    <div class="tile-display" id="pungExampleDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <div class="info-box">
                         <h4>2. Chow (Sequence)</h4>
                         <p>Three consecutive tiles of the same suit</p>
                     </div>
-                    <div class="tile-display">
-                        <div class="tile">⚫⚫⚫<div class="tile-label">3 Dot</div></div>
-                        <div class="tile">⚫⚫⚫⚫<div class="tile-label">4 Dot</div></div>
-                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
+                    <div class="tile-display" id="chowExampleDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <div class="info-box">
                         <h4>3. Kong (Quad)</h4>
                         <p>Four identical tiles (advanced)</p>
                     </div>
-                    <div class="tile-display">
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                    <div class="tile-display" id="kongExampleDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <div class="info-box">
@@ -638,25 +932,8 @@
 
                     <p><strong>Example Winning Hand:</strong></p>
 
-                    <div class="tile-display">
-                        <div class="tile">🎋<div class="tile-label">1 Bam</div></div>
-                        <div class="tile">🎋🎋<div class="tile-label">2 Bam</div></div>
-                        <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                        <div style="width: 20px;"></div>
-                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
-                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
-                        <div class="tile">⚫⚫⚫⚫⚫<div class="tile-label">5 Dot</div></div>
-                        <div style="width: 20px;"></div>
-                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
-                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
-                        <div class="tile">二萬<div class="tile-label">2 Char</div></div>
-                        <div style="width: 20px;"></div>
-                        <div class="tile">東<div class="tile-label">East</div></div>
-                        <div class="tile">東<div class="tile-label">East</div></div>
-                        <div class="tile">東<div class="tile-label">East</div></div>
-                        <div style="width: 20px;"></div>
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                        <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
+                    <div class="tile-display" id="winningHandDisplay">
+                        <!-- SVG tiles will be injected here -->
                     </div>
 
                     <div class="info-box">
@@ -861,25 +1138,8 @@
                     <div class="info-box">
                         <h4>1. All Pungs (Triplets Only)</h4>
                         <p>Four Pungs + One Pair (no Chows)</p>
-                        <div class="tile-display">
-                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                            <div class="tile">🎋🎋🎋<div class="tile-label">3 Bam</div></div>
-                            <div style="width: 10px;"></div>
-                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
-                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
-                            <div class="tile">⚫⚫⚫⚫⚫⚫<div class="tile-label">6 Dot</div></div>
-                            <div style="width: 10px;"></div>
-                            <div class="tile">東<div class="tile-label">East</div></div>
-                            <div class="tile">東<div class="tile-label">East</div></div>
-                            <div class="tile">東<div class="tile-label">East</div></div>
-                            <div style="width: 10px;"></div>
-                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                            <div class="tile" style="color: red;">中<div class="tile-label">Red</div></div>
-                            <div style="width: 10px;"></div>
-                            <div class="tile">萬<div class="tile-label">1 Char</div></div>
-                            <div class="tile">萬<div class="tile-label">1 Char</div></div>
+                        <div class="tile-display" id="allPungsDisplay">
+                            <!-- SVG tiles will be injected here -->
                         </div>
                         <p><strong>Value:</strong> High - Worth many points!</p>
                     </div>
@@ -1003,11 +1263,84 @@
 
                     <div class="button-group">
                         <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="Try game scenarios">Game Scenarios →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 14 - Game Scenarios -->
+                <div class="lesson-content scenarios-section" data-lesson="14">
+                    <h2>Game Scenarios</h2>
+                    <p>Apply your knowledge to real game situations! Practice decision-making in realistic Mahjong scenarios.</p>
+
+                    <div id="scenariosList" class="scenarios-list">
+                        <!-- Scenarios will be dynamically loaded here -->
+                        <div class="loading">Loading scenarios</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
+                        <button class="btn-primary" onclick="nextLesson()" aria-label="View progress dashboard">View Progress →</button>
+                    </div>
+                </div>
+
+                <!-- Lesson 15 - Progress Dashboard -->
+                <div class="lesson-content dashboard-section" data-lesson="15">
+                    <h2>Your Progress</h2>
+                    <p>Track your learning journey and identify areas for improvement.</p>
+
+                    <div class="dashboard-grid">
+                        <div class="stat-card" id="totalTimeCard">
+                            <h3>Study Time</h3>
+                            <div class="stat-value" id="totalTimeValue">0m</div>
+                            <div class="stat-label">Total practice time</div>
+                        </div>
+                        <div class="stat-card" id="accuracyCard">
+                            <h3>Accuracy</h3>
+                            <div class="stat-value" id="accuracyValue">0%</div>
+                            <div class="stat-label">Overall correctness</div>
+                        </div>
+                        <div class="stat-card" id="lessonsCard">
+                            <h3>Lessons</h3>
+                            <div class="stat-value" id="lessonsValue">0/13</div>
+                            <div class="stat-label">Completed lessons</div>
+                        </div>
+                        <div class="stat-card" id="streakCard">
+                            <h3>Streak</h3>
+                            <div class="stat-value" id="streakValue">0</div>
+                            <div class="stat-label">Days in a row</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Progress Over Time</h3>
+                        <canvas id="progressChart" width="800" height="300"></canvas>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Keep Learning!</h4>
+                        <p>Your progress is automatically saved. Continue practicing to improve your skills!</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="previousLesson()" aria-label="Go to previous lesson">← Previous</button>
                         <button class="btn-primary" onclick="completeLesson()" aria-label="Complete the tutorial">Complete Tutorial! 🎉</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Mistakes Panel -->
+    <div id="mistakesPanel" class="mistakes-panel">
+        <button class="close-btn" onclick="closeMistakesPanel()" aria-label="Close mistakes panel">&times;</button>
+        <h3>Your Mistakes Analysis</h3>
+        <div id="mistakesSummary">
+            <!-- Mistake data will be populated here -->
+            <p>No mistakes tracked yet. Complete some practice exercises to see your analysis!</p>
+        </div>
+        <button class="btn-primary targeted-practice-btn" onclick="startTargetedPractice()">
+            Practice Weak Areas
+        </button>
     </div>
 
     <!-- Load modular architecture -->
@@ -1019,17 +1352,759 @@
     <script src="src/lib/preferences.js"></script>
     <script src="src/components/TutorialManager.js"></script>
     <script src="src/lib/MahjongController.js"></script>
+
+    <!-- Enhanced Learning System Modules -->
+    <script type="module" src="src/lib/TileRenderer.js"></script>
+    <script type="module" src="src/lib/DifficultyManager.js"></script>
+    <script type="module" src="src/lib/AudioManager.js"></script>
+    <script type="module" src="src/lib/MistakeAnalyzer.js"></script>
+    <script type="module" src="src/lib/ScenarioEngine.js"></script>
+    <script type="module" src="src/lib/ProgressAnalyzer.js"></script>
+    <script type="module" src="src/lib/EnhancedLearningIntegration.js"></script>
+
+    <!-- Define waitForTileRenderer before main.js loads -->
+    <script>
+        window.waitForTileRenderer = function(callback, callbackName = 'callback') {
+            if (window.tileRenderer && typeof window.tileRenderer.createTileElement === 'function') {
+                try {
+                    console.log(`[Debug] Calling ${callbackName}`);
+                    callback();
+                    console.log(`[Debug] ${callbackName} completed`);
+                } catch (e) {
+                    console.error(`[Error] in ${callbackName}:`, e);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'position:fixed;top:0;left:0;background:red;color:white;padding:10px;z-index:9999';
+                    errorDiv.textContent = `Error in ${callbackName}: ${e.message}`;
+                    document.body.appendChild(errorDiv);
+                }
+            } else {
+                setTimeout(() => window.waitForTileRenderer(callback, callbackName), 50);
+            }
+        };
+    </script>
+
     <script src="src/main.js"></script>
+
+    <script type="module">
+        // Import Enhanced Learning System
+        import { TileRenderer } from './src/lib/TileRenderer.js';
+        import { EnhancedLearningSystem } from './src/lib/EnhancedLearningIntegration.js';
+
+        // Initialize TileRenderer globally
+        window.tileRenderer = new TileRenderer();
+
+        /**
+         * STORAGE QUOTA MANAGEMENT DOCUMENTATION
+         *
+         * MAX_STORAGE_BYTES: 3MB Limit Justification
+         *
+         * DATA MODEL CALCULATIONS:
+         * Per Practice Session:
+         * - Mistake record: ~200 bytes (lesson ID, timestamp, accuracy, metadata)
+         * - Performance history: ~150 bytes per attempt
+         * - Difficulty stats: ~100 bytes per difficulty level
+         * - Scenario progress: ~50 bytes per scenario
+         *
+         * Estimated Storage Requirements:
+         * - 100 practice sessions: ~50KB (100 × 500 bytes average)
+         * - 500 practice sessions: ~250KB
+         * - 1000 practice sessions: ~500KB
+         * - 2000 practice sessions: ~1MB
+         * - 6000 practice sessions: ~3MB (our limit)
+         *
+         * 3MB LIMIT RATIONALE:
+         * - Supports 6000+ practice sessions (2+ years of daily practice)
+         * - Conservative: 60% of minimum browser quota (5MB)
+         * - Leaves 2MB headroom for browser variations
+         * - Compatible with all modern browsers (Safari 5MB, Chrome 10MB, Firefox 10MB)
+         *
+         * BROWSER COMPATIBILITY:
+         * - Safari: 5MB limit → 3MB is 60% (safe)
+         * - Chrome: 10MB limit → 3MB is 30% (very safe)
+         * - Firefox: 10MB limit → 3MB is 30% (very safe)
+         * - Edge: 10MB limit → 3MB is 30% (very safe)
+         *
+         * VALIDATION STATUS: ⚠️ Initial design estimates - REQUIRES MONITORING
+         * - Add telemetry to track actual storage usage patterns
+         * - Monitor user data growth over time
+         * - Adjust limit based on real-world data
+         *
+         * TODO:
+         * - Add storage usage analytics
+         * - Implement graduated alerts (75%, 85%, 95% thresholds)
+         * - A/B test different limits if issues arise
+         */
+
+        // Create quota-aware data manager for Enhanced Learning System
+        const simpleDataManager = {
+            // Track data age for LRU cleanup
+            _accessTimes: new Map(),
+
+            // Max storage size (see documentation above for justification)
+            MAX_STORAGE_BYTES: 3 * 1024 * 1024, // 3MB - supports 6000+ sessions
+
+            // Cleanup attempt counter (for graduated strategy)
+            _cleanupAttempts: 0,
+
+            // User has been warned about storage limits
+            _userWarned: false,
+
+            /**
+             * Estimate current localStorage usage in bytes
+             */
+            _estimateStorageSize() {
+                let total = 0;
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        const value = localStorage[key];
+                        total += key.length + (value ? value.length : 0);
+                    }
+                }
+                return total * 2; // UTF-16 uses 2 bytes per character
+            },
+
+            /**
+             * Export user data for backup before cleanup
+             * @returns {Object} All user data as JSON object
+             */
+            _exportUserData() {
+                const exportData = {};
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        exportData[key] = localStorage[key];
+                    }
+                }
+                return exportData;
+            },
+
+            /**
+             * Trigger data export download
+             */
+            _downloadBackup() {
+                const exportData = this._exportUserData();
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mahjong-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            },
+
+            /**
+             * Get user consent for data cleanup
+             * @param {number} percentageToRemove - Percentage of data to remove (5, 10, or 20)
+             * @returns {Promise<boolean>} True if user consents
+             */
+            async _getUserConsentForCleanup(percentageToRemove) {
+                return new Promise((resolve) => {
+                    const currentSize = this._estimateStorageSize();
+                    const currentMB = (currentSize / 1024 / 1024).toFixed(2);
+                    const limitMB = (this.MAX_STORAGE_BYTES / 1024 / 1024).toFixed(2);
+
+                    const message = `Storage Limit Reached\n\n` +
+                        `Current usage: ${currentMB}MB / ${limitMB}MB\n\n` +
+                        `To continue saving progress, we need to remove approximately ${percentageToRemove}% of your oldest practice data.\n\n` +
+                        `Options:\n` +
+                        `• Click "Download Backup" to save your data first\n` +
+                        `• Click "OK" to proceed with cleanup\n` +
+                        `• Click "Cancel" to skip (new progress may not be saved)\n\n` +
+                        `Would you like to download a backup before cleanup?`;
+
+                    // Show backup option first
+                    if (confirm(message)) {
+                        this._downloadBackup();
+                        setTimeout(() => {
+                            const proceedMessage = `Backup downloaded!\n\nProceed with removing ${percentageToRemove}% of oldest practice data?`;
+                            resolve(confirm(proceedMessage));
+                        }, 500);
+                    } else {
+                        const skipBackupMessage = `Skip backup and proceed with cleanup?\n\n` +
+                            `Warning: ${percentageToRemove}% of your oldest practice data will be permanently removed.`;
+                        resolve(confirm(skipBackupMessage));
+                    }
+                });
+            },
+
+            /**
+             * Clean up old data using graduated LRU strategy
+             * IMPORTANT: NEVER deletes data without user consent
+             *
+             * Graduated Strategy:
+             * - 1st attempt: Remove 5% of oldest data (minimal impact)
+             * - 2nd attempt: Remove 10% of oldest data (moderate impact)
+             * - 3rd+ attempt: Remove 20% of oldest data (aggressive cleanup)
+             */
+            async _cleanup() {
+                // Determine cleanup percentage based on attempt count
+                let cleanupPercentage;
+                if (this._cleanupAttempts === 0) {
+                    cleanupPercentage = 5;  // First attempt: gentle cleanup
+                } else if (this._cleanupAttempts === 1) {
+                    cleanupPercentage = 10; // Second attempt: moderate cleanup
+                } else {
+                    cleanupPercentage = 20; // Third+ attempt: aggressive cleanup
+                }
+
+                this._cleanupAttempts++;
+
+                console.warn(`[Storage] Quota approaching limit, requesting cleanup (${cleanupPercentage}%)`);
+
+                // Get user consent
+                const userConsents = await this._getUserConsentForCleanup(cleanupPercentage);
+                if (!userConsents) {
+                    console.warn('[Storage] User declined cleanup, data may not be saved');
+                    throw new Error('User declined data cleanup');
+                }
+
+                // User consented - proceed with cleanup
+                console.log(`[Storage] User consented to ${cleanupPercentage}% cleanup`);
+
+                // Get all mahjong keys with access times
+                const entries = [];
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        const accessTime = this._accessTimes.get(key) || 0;
+                        entries.push({ key, accessTime });
+                    }
+                }
+
+                // Sort by access time (oldest first)
+                entries.sort((a, b) => a.accessTime - b.accessTime);
+
+                // Remove specified percentage of oldest data
+                const removeCount = Math.ceil(entries.length * (cleanupPercentage / 100));
+                let removedCount = 0;
+                let freedBytes = 0;
+
+                for (let i = 0; i < removeCount; i++) {
+                    try {
+                        const key = entries[i].key;
+                        const value = localStorage[key];
+                        const size = (key.length + (value ? value.length : 0)) * 2;
+
+                        localStorage.removeItem(key);
+                        this._accessTimes.delete(key);
+                        removedCount++;
+                        freedBytes += size;
+
+                        console.log(`[Storage] Removed old data: ${key} (${(size / 1024).toFixed(2)}KB)`);
+                    } catch (e) {
+                        console.error(`[Storage] Error removing ${entries[i].key}:`, e);
+                    }
+                }
+
+                console.log(`[Storage] Cleanup complete: Removed ${removedCount} items, freed ${(freedBytes / 1024).toFixed(2)}KB`);
+
+                // Reset attempt counter on successful cleanup
+                if (removedCount > 0) {
+                    this._cleanupAttempts = 0;
+                }
+            },
+
+            /**
+             * Show warning to user when approaching storage limit
+             */
+            _showStorageWarning() {
+                if (this._userWarned) return; // Only warn once per session
+
+                const currentSize = this._estimateStorageSize();
+                const percentUsed = (currentSize / this.MAX_STORAGE_BYTES) * 100;
+
+                if (percentUsed >= 85) {
+                    const message = `Storage Warning\n\n` +
+                        `You're using ${percentUsed.toFixed(0)}% of available storage.\n\n` +
+                        `Consider downloading a backup of your progress:\n` +
+                        `Settings → Export Progress Data\n\n` +
+                        `This warning won't show again this session.`;
+
+                    alert(message);
+                    this._userWarned = true;
+
+                    console.warn(`[Storage] User warned about ${percentUsed.toFixed(0)}% storage usage`);
+                }
+            },
+
+            get: (key) => {
+                try {
+                    const fullKey = `mahjong_${key}`;
+                    this._accessTimes.set(fullKey, Date.now());
+                    return JSON.parse(localStorage.getItem(fullKey));
+                } catch {
+                    return null;
+                }
+            },
+
+            set: async function(key, value) {
+                const fullKey = `mahjong_${key}`;
+                const data = JSON.stringify(value);
+
+                // Check current storage usage
+                const currentSize = this._estimateStorageSize();
+                const newDataSize = (fullKey.length + data.length) * 2;
+                const percentUsed = (currentSize / this.MAX_STORAGE_BYTES) * 100;
+
+                // Show warning at 85% threshold
+                if (percentUsed >= 85) {
+                    this._showStorageWarning();
+                }
+
+                // Check if we're approaching quota limit (95% threshold)
+                if (currentSize + newDataSize > this.MAX_STORAGE_BYTES) {
+                    console.warn(`[Storage] Approaching quota limit (${(currentSize / 1024 / 1024).toFixed(2)}MB / ${(this.MAX_STORAGE_BYTES / 1024 / 1024).toFixed(2)}MB)`);
+
+                    try {
+                        await this._cleanup();
+                    } catch (cleanupError) {
+                        // User declined cleanup
+                        console.warn('[Storage] Cleanup cancelled by user');
+                        return; // Don't try to save if user declined cleanup
+                    }
+                }
+
+                try {
+                    localStorage.setItem(fullKey, data);
+                    this._accessTimes.set(fullKey, Date.now());
+                } catch (e) {
+                    // Handle QuotaExceededError
+                    if (e.name === 'QuotaExceededError' || e.code === 22) {
+                        console.error('[Storage] Quota exceeded despite cleanup, requesting additional cleanup');
+
+                        try {
+                            await this._cleanup();
+
+                            // Try again after cleanup
+                            try {
+                                localStorage.setItem(fullKey, data);
+                                this._accessTimes.set(fullKey, Date.now());
+                                console.log('[Storage] Data saved successfully after cleanup');
+                            } catch (e2) {
+                                // Still failing after cleanup
+                                console.error('[Storage] Failed to save data after cleanup:', e2);
+                                const msg = 'Unable to save progress. Storage is full even after cleanup.';
+
+                                // Show user-friendly error
+                                if (document.getElementById('feedback')) {
+                                    const feedback = document.getElementById('feedback');
+                                    feedback.textContent = msg;
+                                    feedback.classList.add('show', 'error');
+                                    setTimeout(() => feedback.classList.remove('show'), 5000);
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+                        } catch (cleanupError) {
+                            // User declined cleanup
+                            console.warn('[Storage] User declined cleanup, data not saved');
+                            const msg = 'Progress not saved. Storage cleanup was cancelled.';
+
+                            if (document.getElementById('feedback')) {
+                                const feedback = document.getElementById('feedback');
+                                feedback.textContent = msg;
+                                feedback.classList.add('show', 'warning');
+                                setTimeout(() => feedback.classList.remove('show'), 5000);
+                            }
+                        }
+                    } else {
+                        console.error('Storage error:', e);
+                    }
+                }
+            },
+
+            /**
+             * Clear all mahjong data (for testing or user request)
+             */
+            clear() {
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                this._accessTimes.clear();
+                console.log('[Storage] All mahjong data cleared');
+            }
+        };
+
+        const simpleGameData = {
+            lessons: Array.from({length: 15}, (_, i) => ({id: `lesson_${i+1}`, name: `Lesson ${i+1}`}))
+        };
+
+        const simplePreferences = {
+            get: (key) => simpleDataManager.get(`pref_${key}`),
+            set: (key, value) => simpleDataManager.set(`pref_${key}`, value),
+            getPreference: function(key, defaultValue) {
+                const value = this.get(key);
+                return value !== null ? value : defaultValue;
+            },
+            setPreference: function(key, value) {
+                this.set(key, value);
+            }
+        };
+
+        // Initialize Enhanced Learning System
+        let learningSystem;
+        try {
+            learningSystem = new EnhancedLearningSystem(simpleDataManager, simpleGameData, simplePreferences);
+            learningSystem.initialize();
+            window.learningSystem = learningSystem;
+            console.log('Enhanced Learning System initialized successfully');
+        } catch (error) {
+            console.error('Error initializing Enhanced Learning System:', error);
+        }
+
+        // Setup header controls
+        const difficultySelect = document.getElementById('difficultySelect');
+        const audioToggle = document.getElementById('audioToggle');
+        const mistakesToggle = document.getElementById('mistakesToggle');
+
+        // Load saved difficulty
+        const savedDifficulty = localStorage.getItem('mahjong_difficulty') || 'medium';
+        difficultySelect.value = savedDifficulty;
+
+        // Difficulty change handler
+        difficultySelect.addEventListener('change', (e) => {
+            const difficulty = e.target.value;
+            localStorage.setItem('mahjong_difficulty', difficulty);
+            if (learningSystem && learningSystem.difficultyManager) {
+                learningSystem.difficultyManager.setDifficulty(difficulty);
+                console.log(`Difficulty changed to: ${difficulty}`);
+            }
+        });
+
+        // Audio toggle handler
+        let audioEnabled = localStorage.getItem('mahjong_audio') !== 'false';
+        audioToggle.textContent = audioEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+        if (!audioEnabled) audioToggle.classList.add('muted');
+
+        audioToggle.addEventListener('click', () => {
+            audioEnabled = !audioEnabled;
+            localStorage.setItem('mahjong_audio', audioEnabled);
+            audioToggle.textContent = audioEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+            audioToggle.classList.toggle('muted');
+
+            if (learningSystem && learningSystem.audioManager) {
+                if (audioEnabled) {
+                    learningSystem.audioManager.unmute();
+                } else {
+                    learningSystem.audioManager.mute();
+                }
+            }
+        });
+
+        // Mistakes panel toggle
+        mistakesToggle.addEventListener('click', () => {
+            document.getElementById('mistakesPanel').classList.add('open');
+            updateMistakesPanel();
+        });
+
+        // Populate SVG tiles for visual lessons
+        function populateStaticTiles() {
+            // Lesson 2: Suit tiles
+            const suitDisplay = document.getElementById('suitTilesDisplay');
+            if (suitDisplay) {
+                suitDisplay.innerHTML = '';
+                ['bamboo', 'character', 'dot'].forEach(suit => {
+                    [1, 2, 3].forEach(num => {
+                        const tile = window.tileRenderer.createTileElement(suit, num);
+                        suitDisplay.appendChild(tile);
+                    });
+                });
+            }
+
+            // Lesson 3: Dragons
+            const dragonDisplay = document.getElementById('dragonTilesDisplay');
+            if (dragonDisplay) {
+                dragonDisplay.innerHTML = '';
+                ['red', 'green', 'white'].forEach(dragon => {
+                    const tile = window.tileRenderer.createTileElement('dragon', dragon);
+                    dragonDisplay.appendChild(tile);
+                });
+            }
+
+            // Lesson 3: Winds
+            const windDisplay = document.getElementById('windTilesDisplay');
+            if (windDisplay) {
+                windDisplay.innerHTML = '';
+                ['east', 'south', 'west', 'north'].forEach(wind => {
+                    const tile = window.tileRenderer.createTileElement('wind', wind);
+                    windDisplay.appendChild(tile);
+                });
+            }
+
+            // Lesson 4: Pung example
+            const pungDisplay = document.getElementById('pungExampleDisplay');
+            if (pungDisplay) {
+                pungDisplay.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    const tile = window.tileRenderer.createTileElement('bamboo', 3);
+                    pungDisplay.appendChild(tile);
+                }
+            }
+
+            // Lesson 4: Chow example
+            const chowDisplay = document.getElementById('chowExampleDisplay');
+            if (chowDisplay) {
+                chowDisplay.innerHTML = '';
+                [3, 4, 5].forEach(num => {
+                    const tile = window.tileRenderer.createTileElement('dot', num);
+                    chowDisplay.appendChild(tile);
+                });
+            }
+
+            // Lesson 4: Kong example
+            const kongDisplay = document.getElementById('kongExampleDisplay');
+            if (kongDisplay) {
+                kongDisplay.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const tile = window.tileRenderer.createTileElement('dragon', 'red');
+                    kongDisplay.appendChild(tile);
+                }
+            }
+
+            // Lesson 5: Winning hand example
+            const winningDisplay = document.getElementById('winningHandDisplay');
+            if (winningDisplay) {
+                winningDisplay.innerHTML = '';
+                // Chow 1-2-3 Bamboo
+                [1, 2, 3].forEach(num => {
+                    const tile = window.tileRenderer.createTileElement('bamboo', num);
+                    winningDisplay.appendChild(tile);
+                });
+                winningDisplay.appendChild(document.createElement('div')); // spacer
+                // Pung 5 Dots
+                for (let i = 0; i < 3; i++) {
+                    const tile = window.tileRenderer.createTileElement('dot', 5);
+                    winningDisplay.appendChild(tile);
+                }
+                winningDisplay.appendChild(document.createElement('div')); // spacer
+                // Pung 2 Characters
+                for (let i = 0; i < 3; i++) {
+                    const tile = window.tileRenderer.createTileElement('character', 2);
+                    winningDisplay.appendChild(tile);
+                }
+                winningDisplay.appendChild(document.createElement('div')); // spacer
+                // Pung East
+                for (let i = 0; i < 3; i++) {
+                    const tile = window.tileRenderer.createTileElement('wind', 'east');
+                    winningDisplay.appendChild(tile);
+                }
+                winningDisplay.appendChild(document.createElement('div')); // spacer
+                // Pair Red Dragons
+                for (let i = 0; i < 2; i++) {
+                    const tile = window.tileRenderer.createTileElement('dragon', 'red');
+                    winningDisplay.appendChild(tile);
+                }
+            }
+
+            // Lesson 11: All Pungs example
+            const allPungsDisplay = document.getElementById('allPungsDisplay');
+            if (allPungsDisplay) {
+                allPungsDisplay.innerHTML = '';
+                const sets = [
+                    {suit: 'bamboo', value: 3},
+                    {suit: 'dot', value: 6},
+                    {suit: 'wind', value: 'east'},
+                    {suit: 'dragon', value: 'red'}
+                ];
+                sets.forEach(set => {
+                    for (let i = 0; i < 3; i++) {
+                        const tile = window.tileRenderer.createTileElement(set.suit, set.value);
+                        allPungsDisplay.appendChild(tile);
+                    }
+                    allPungsDisplay.appendChild(document.createElement('div')); // spacer
+                });
+                // Pair
+                for (let i = 0; i < 2; i++) {
+                    const tile = window.tileRenderer.createTileElement('character', 1);
+                    allPungsDisplay.appendChild(tile);
+                }
+            }
+        }
+
+        // Populate on page load
+        document.addEventListener('DOMContentLoaded', populateStaticTiles);
+
+        // Also populate after a short delay to ensure everything is loaded
+        setTimeout(populateStaticTiles, 100);
+
+        // Make functions globally available
+        window.closeMistakesPanel = function() {
+            document.getElementById('mistakesPanel').classList.remove('open');
+        };
+
+        window.updateMistakesPanel = function() {
+            if (!learningSystem || !learningSystem.mistakeAnalyzer) return;
+
+            const summary = learningSystem.mistakeAnalyzer.generateReport();
+            const summaryDiv = document.getElementById('mistakesSummary');
+
+            if (summary.totalMistakes === 0) {
+                summaryDiv.innerHTML = '<p>No mistakes tracked yet. Complete some practice exercises to see your analysis!</p>';
+                return;
+            }
+
+            let html = `<div class="mistake-summary">
+                <p><strong>Total Mistakes:</strong> <span class="mistake-count">${summary.totalMistakes}</span></p>
+                <p><strong>Overall Accuracy:</strong> ${(summary.overallAccuracy * 100).toFixed(1)}%</p>
+            </div>`;
+
+            if (summary.byCategory && Object.keys(summary.byCategory).length > 0) {
+                html += '<h4>By Category:</h4>';
+                for (const [category, data] of Object.entries(summary.byCategory)) {
+                    html += `<div class="mistake-summary">
+                        <div class="mistake-category">${category}</div>
+                        <p>Mistakes: <span class="mistake-count">${data.count}</span></p>
+                        <p>Accuracy: ${(data.accuracy * 100).toFixed(1)}%</p>
+                    </div>`;
+                }
+            }
+
+            summaryDiv.innerHTML = html;
+        };
+
+        window.startTargetedPractice = function() {
+            if (!learningSystem || !learningSystem.mistakeAnalyzer) return;
+
+            const weakAreas = learningSystem.mistakeAnalyzer.getWeakAreas();
+            if (weakAreas.length === 0) {
+                alert('Great job! No weak areas identified. Keep practicing!');
+                return;
+            }
+
+            const area = weakAreas[0];
+            alert(`Let's practice: ${area.category}\nYou've made ${area.count} mistakes in this area.`);
+
+            // Switch to appropriate lesson
+            const lessonMap = {
+                'pairs': 7,
+                'pungs': 8,
+                'chows': 9,
+                'winning_hand': 12
+            };
+
+            const lessonNum = lessonMap[area.category];
+            if (lessonNum) {
+                window.switchLesson(lessonNum);
+                closeMistakesPanel();
+            }
+        };
+
+        // Store scenario cards event handler reference for cleanup
+        let scenarioCardsHandler = null;
+
+        // Load scenarios
+        window.loadScenarios = function() {
+            if (!learningSystem || !learningSystem.scenarioEngine) return;
+
+            const scenariosList = document.getElementById('scenariosList');
+
+            // Clean up old event listener before clearing HTML
+            if (scenarioCardsHandler) {
+                scenariosList.removeEventListener('click', scenarioCardsHandler);
+            }
+
+            scenariosList.innerHTML = '<div class="loading">Loading scenarios</div>';
+
+            setTimeout(() => {
+                const scenarios = learningSystem.scenarioEngine.getAllScenarios();
+
+                if (scenarios.length === 0) {
+                    scenariosList.innerHTML = '<p>No scenarios available yet.</p>';
+                    return;
+                }
+
+                scenariosList.innerHTML = '';
+                scenarios.forEach(scenario => {
+                    const card = document.createElement('div');
+                    card.className = 'scenario-card';
+                    card.dataset.scenarioId = scenario.id; // Store scenario ID in data attribute
+                    card.innerHTML = `
+                        <h3>${scenario.title}</h3>
+                        <span class="scenario-difficulty ${scenario.difficulty}">${scenario.difficulty}</span>
+                        <p>${scenario.description}</p>
+                    `;
+                    // No inline onclick - using delegation below
+                    scenariosList.appendChild(card);
+                });
+
+                // Event delegation: single handler for all scenario cards
+                scenarioCardsHandler = function(e) {
+                    const card = e.target.closest('.scenario-card');
+                    if (!card) return;
+
+                    const scenarioId = card.dataset.scenarioId;
+                    if (scenarioId) {
+                        playScenario(scenarioId);
+                    }
+                };
+
+                scenariosList.addEventListener('click', scenarioCardsHandler);
+            }, 500);
+        };
+
+        window.playScenario = function(scenarioId) {
+            if (!learningSystem || !learningSystem.scenarioEngine) return;
+
+            const result = learningSystem.scenarioEngine.loadScenario(scenarioId);
+            if (result.success) {
+                alert(`Starting scenario: ${result.scenario.title}\n\n${result.scenario.description}`);
+                // Here you would implement the actual scenario gameplay
+            }
+        };
+
+        // Update dashboard
+        window.updateDashboard = function() {
+            if (!learningSystem || !learningSystem.progressAnalyzer) return;
+
+            const stats = learningSystem.progressAnalyzer.generateProgressReport();
+
+            // Update stat cards
+            const totalMinutes = Math.round((stats.totalPracticeTime || 0) / 60000);
+            document.getElementById('totalTimeValue').textContent = `${totalMinutes}m`;
+
+            const accuracy = ((stats.overallAccuracy || 0) * 100).toFixed(1);
+            document.getElementById('accuracyValue').textContent = `${accuracy}%`;
+
+            const completedCount = window.completedLessons ? window.completedLessons.size : 0;
+            document.getElementById('lessonsValue').textContent = `${completedCount}/13`;
+
+            const streak = stats.currentStreak || 0;
+            document.getElementById('streakValue').textContent = streak;
+
+            // Simple chart rendering (you could use Chart.js for more sophisticated charts)
+            const canvas = document.getElementById('progressChart');
+            if (canvas && canvas.getContext) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Progress chart will be enhanced with Chart.js', canvas.width / 2, canvas.height / 2);
+            }
+        };
+
+        // Export for global use
+        window.learningSystemReady = true;
+    </script>
 
     <script>
         // Lesson navigation
         let currentLesson = 1;
-        const totalLessons = 13;
+        const totalLessons = 15;
         const completedLessons = new Set();
 
         function updateProgress() {
             const progress = (completedLessons.size / totalLessons) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
+
+            // Save progress
+            localStorage.setItem('mahjong_progress', JSON.stringify({
+                completed: Array.from(completedLessons),
+                current: currentLesson
+            }));
         }
 
         function switchLesson(lessonNum) {
@@ -1055,16 +2130,42 @@
             if (lessonNum > 1) {
                 for (let i = 1; i < lessonNum; i++) {
                     completedLessons.add(i);
-                    document.querySelector(`.lesson-item[data-lesson="${i}"]`).classList.add('completed');
+                    document.querySelector(`.lesson-item[data-lesson="${i}"]`)?.classList.add('completed');
                 }
                 updateProgress();
+            }
+
+            // Load lesson-specific content
+            if (lessonNum === 14) {
+                loadScenarios();
+            } else if (lessonNum === 15) {
+                updateDashboard();
+            }
+
+            // Track in learning system
+            if (window.learningSystem && window.learningSystem.progressAnalyzer) {
+                window.learningSystem.progressAnalyzer.trackLessonStart(`lesson_${lessonNum}`);
             }
         }
 
         function nextLesson() {
             if (currentLesson < totalLessons) {
                 completedLessons.add(currentLesson);
-                document.querySelector(`.lesson-item[data-lesson="${currentLesson}"]`).classList.add('completed');
+                document.querySelector(`.lesson-item[data-lesson="${currentLesson}"]`)?.classList.add('completed');
+
+                // Track completion
+                if (window.learningSystem && window.learningSystem.progressAnalyzer) {
+                    window.learningSystem.progressAnalyzer.trackLessonComplete(`lesson_${currentLesson}`, {
+                        score: 100,
+                        timeSpent: 60000 // Example time
+                    });
+                }
+
+                // Play success sound
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
+
                 switchLesson(currentLesson + 1);
                 updateProgress();
             }
@@ -1079,7 +2180,13 @@
         function completeLesson() {
             completedLessons.add(currentLesson);
             updateProgress();
-            alert('Congratulations! You\'ve completed the Mahjong tutorial! 🎉\n\nYou now know:\n- The different types of tiles\n- How to build sets\n- What makes a winning hand\n- Basic gameplay rules\n\nKeep practicing to become a Mahjong master!');
+
+            // Play achievement sound
+            if (window.learningSystem && window.learningSystem.audioManager) {
+                window.learningSystem.audioManager.play('achievement');
+            }
+
+            alert('Congratulations! You\'ve completed the Mahjong tutorial! 🎉\n\nYou now know:\n- The different types of tiles\n- How to build sets\n- What makes a winning hand\n- Basic gameplay rules\n- Strategy and tactics\n\nKeep practicing to become a Mahjong master!');
         }
 
         // Sidebar click handlers
@@ -1090,62 +2197,97 @@
             });
         });
 
-        // Interactive practice game
+        // Interactive practice game - Using SVG tiles
         const practiceTiles = [
-            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
-            { id: 2, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
-            { id: 3, symbol: '⚫⚫', label: '2 Dot', type: 'dot-2' },
-            { id: 4, symbol: '⚫⚫', label: '2 Dot', type: 'dot-2' },
-            { id: 5, symbol: '東', label: 'East', type: 'east' },
-            { id: 6, symbol: '南', label: 'South', type: 'south' },
-            { id: 7, symbol: '三萬', label: '3 Char', type: 'char-3' },
-            { id: 8, symbol: '三萬', label: '3 Char', type: 'char-3' }
+            { id: 1, type: 'bamboo', value: 1 },
+            { id: 2, type: 'bamboo', value: 1 },
+            { id: 3, type: 'dot', value: 2 },
+            { id: 4, type: 'dot', value: 2 },
+            { id: 5, type: 'wind', value: 'east' },
+            { id: 6, type: 'wind', value: 'south' },
+            { id: 7, type: 'character', value: 3 },
+            { id: 8, type: 'character', value: 3 }
         ];
 
         let selectedTiles = [];
         let correctPairs = 0;
 
+        // Store event handler reference for cleanup
+        let practiceAreaHandler = null;
+
         function initPractice() {
             const practiceArea = document.getElementById('practiceArea');
+            if (!practiceArea) {
+                console.log('[Debug] practiceArea not found, skipping initPractice');
+                return;
+            }
+
+            // Clean up old event listener before re-initializing
+            if (practiceAreaHandler) {
+                practiceArea.removeEventListener('click', practiceAreaHandler);
+                practiceArea.removeEventListener('keypress', practiceAreaHandler);
+            }
+
             practiceArea.innerHTML = '';
 
             // Shuffle tiles
             const shuffled = [...practiceTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = document.createElement('div');
-                tileElement.className = 'tile';
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
-                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
-                tileElement.onclick = () => selectTile(tileElement);
+                tileElement.dataset.value = tile.value;
+                // No inline event handlers - using delegation below
                 tileElement.setAttribute('role', 'button');
-                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
-                tileElement.onkeypress = (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        selectTile(tileElement);
-                    }
-                };
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation: single handler on parent for all tiles
+            practiceAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                // Handle keyboard events
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                // Handle click events
+                if (e.type === 'click') {
+                    selectTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', practiceAreaHandler);
+            practiceArea.addEventListener('keypress', practiceAreaHandler);
+
+            console.log(`[Debug] initPractice completed, added ${shuffled.length} tiles`);
         }
 
-        function selectTile(element) {
+        function selectTile(element, tileId) {
             if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
                 return;
             }
 
             element.classList.toggle('selected');
 
-            const tileId = parseInt(element.dataset.id);
             const index = selectedTiles.indexOf(tileId);
 
             if (index > -1) {
                 selectedTiles.splice(index, 1);
             } else {
                 selectedTiles.push(tileId);
+                // Play tile click sound
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('tileClick');
+                }
             }
         }
 
@@ -1165,31 +2307,35 @@
             if (selectedTiles.length === 0) {
                 feedback.textContent = 'Please select some tiles first!';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
             if (selectedTiles.length % 2 !== 0) {
                 feedback.textContent = 'Pairs must have exactly 2 tiles. Select an even number of tiles!';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
             // Check if selected tiles form valid pairs
-            const selectedTypes = selectedTiles.map(id => {
-                const tile = practiceTiles.find(t => t.id === id);
-                return tile ? tile.type : null;
+            const selectedTileData = selectedTiles.map(id => practiceTiles.find(t => t.id === id));
+            const typeValuePairs = {};
+
+            selectedTileData.forEach(tile => {
+                const key = `${tile.type}-${tile.value}`;
+                typeValuePairs[key] = (typeValuePairs[key] || 0) + 1;
             });
 
-            const typeCounts = {};
-            selectedTypes.forEach(type => {
-                typeCounts[type] = (typeCounts[type] || 0) + 1;
-            });
-
-            const allPairs = Object.values(typeCounts).every(count => count === 2);
+            const allPairs = Object.values(typeValuePairs).every(count => count === 2);
 
             if (allPairs && selectedTiles.length === 8) {
                 // All tiles selected and form pairs
-                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#practiceArea .selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
@@ -1197,10 +2343,23 @@
                 feedback.classList.add('show', 'success');
                 document.getElementById('pairsNextBtn').disabled = false;
                 correctPairs = 4;
+
+                // Play success sound
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
+
+                // Track in learning system
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('pairs', true, {
+                        lesson: 'lesson_7',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             } else if (allPairs) {
                 // Correct pairs but not all
                 const pairsFound = selectedTiles.length / 2;
-                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#practiceArea .selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
@@ -1208,9 +2367,13 @@
                 feedback.classList.add('show', 'success');
                 correctPairs += pairsFound;
                 selectedTiles = [];
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
             } else {
                 // Not valid pairs
-                document.querySelectorAll('#practiceArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#practiceArea .selected').forEach(tile => {
                     tile.classList.add('incorrect');
                     setTimeout(() => {
                         tile.classList.remove('incorrect', 'selected');
@@ -1219,6 +2382,19 @@
                 feedback.textContent = 'Not quite! Remember: pairs must be two IDENTICAL tiles.';
                 feedback.classList.add('show', 'error');
                 selectedTiles = [];
+
+                // Play error sound
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
+
+                // Track mistake
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('pairs', false, {
+                        lesson: 'lesson_7',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             }
         }
 
@@ -1230,61 +2406,90 @@
             initPractice();
         }
 
-        // Initialize practice when page loads
-        initPractice();
+        // Initialize practice when page loads - wait for tileRenderer
+        window.waitForTileRenderer(initPractice, 'initPractice');
 
         // =================
         // LESSON 8: Find Pungs Practice
         // =================
         const pungTiles = [
-            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
-            { id: 2, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
-            { id: 3, symbol: '🎋', label: '1 Bam', type: 'bamboo-1' },
-            { id: 4, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
-            { id: 5, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
-            { id: 6, symbol: '⚫⚫⚫⚫', label: '4 Dot', type: 'dot-4' },
-            { id: 7, symbol: '東', label: 'East', type: 'east' },
-            { id: 8, symbol: '東', label: 'East', type: 'east' },
-            { id: 9, symbol: '南', label: 'South', type: 'south' },
-            { id: 10, symbol: '二萬', label: '2 Char', type: 'char-2' },
-            { id: 11, symbol: '三萬', label: '3 Char', type: 'char-3' },
-            { id: 12, symbol: '三萬', label: '3 Char', type: 'char-3' }
+            { id: 1, type: 'bamboo', value: 1 },
+            { id: 2, type: 'bamboo', value: 1 },
+            { id: 3, type: 'bamboo', value: 1 },
+            { id: 4, type: 'dot', value: 4 },
+            { id: 5, type: 'dot', value: 4 },
+            { id: 6, type: 'dot', value: 4 },
+            { id: 7, type: 'wind', value: 'east' },
+            { id: 8, type: 'wind', value: 'east' },
+            { id: 9, type: 'wind', value: 'south' },
+            { id: 10, type: 'character', value: 2 },
+            { id: 11, type: 'character', value: 3 },
+            { id: 12, type: 'character', value: 3 }
         ];
 
         let selectedPungTiles = [];
+        let pungAreaHandler = null;
 
         function initPungPractice() {
             const practiceArea = document.getElementById('pungPracticeArea');
             if (!practiceArea) return;
 
+            // Clean up old event listener
+            if (pungAreaHandler) {
+                practiceArea.removeEventListener('click', pungAreaHandler);
+                practiceArea.removeEventListener('keypress', pungAreaHandler);
+            }
+
             practiceArea.innerHTML = '';
             const shuffled = [...pungTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = document.createElement('div');
-                tileElement.className = 'tile';
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
-                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
-                tileElement.onclick = () => selectPungTile(tileElement);
+                tileElement.dataset.value = tile.value;
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
-                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation
+            pungAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectPungTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    selectPungTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', pungAreaHandler);
+            practiceArea.addEventListener('keypress', pungAreaHandler);
         }
 
-        function selectPungTile(element) {
+        function selectPungTile(element, tileId) {
             if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
                 return;
             }
             element.classList.toggle('selected');
-            const tileId = parseInt(element.dataset.id);
             const index = selectedPungTiles.indexOf(tileId);
             if (index > -1) {
                 selectedPungTiles.splice(index, 1);
             } else {
                 selectedPungTiles.push(tileId);
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('tileClick');
+                }
             }
         }
 
@@ -1295,46 +2500,63 @@
             if (selectedPungTiles.length === 0) {
                 feedback.textContent = 'Please select some tiles first!';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
             if (selectedPungTiles.length % 3 !== 0) {
                 feedback.textContent = 'Pungs must have exactly 3 tiles each! Select a multiple of 3.';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
-            const selectedTypes = selectedPungTiles.map(id => {
-                const tile = pungTiles.find(t => t.id === id);
-                return tile ? tile.type : null;
+            const selectedTileData = selectedPungTiles.map(id => pungTiles.find(t => t.id === id));
+            const typeValueCounts = {};
+
+            selectedTileData.forEach(tile => {
+                const key = `${tile.type}-${tile.value}`;
+                typeValueCounts[key] = (typeValueCounts[key] || 0) + 1;
             });
 
-            const typeCounts = {};
-            selectedTypes.forEach(type => {
-                typeCounts[type] = (typeCounts[type] || 0) + 1;
-            });
-
-            const allPungs = Object.values(typeCounts).every(count => count === 3);
-            const correctPungCount = 2; // bamboo-1 and dot-4
+            const allPungs = Object.values(typeValueCounts).every(count => count === 3);
 
             if (allPungs && selectedPungTiles.length === 6) {
-                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#pungPracticeArea .selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
                 feedback.textContent = 'Perfect! You found both Pungs! 🎉';
                 feedback.classList.add('show', 'success');
                 document.getElementById('pungNextBtn').disabled = false;
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('pungs', true, {
+                        lesson: 'lesson_8',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             } else if (allPungs) {
-                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#pungPracticeArea .selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
                 feedback.textContent = 'Good! But there are more Pungs to find!';
                 feedback.classList.add('show', 'success');
                 selectedPungTiles = [];
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
             } else {
-                document.querySelectorAll('#pungPracticeArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#pungPracticeArea .selected').forEach(tile => {
                     tile.classList.add('incorrect');
                     setTimeout(() => {
                         tile.classList.remove('incorrect', 'selected');
@@ -1343,6 +2565,16 @@
                 feedback.textContent = 'Not quite! Remember: Pungs are THREE identical tiles.';
                 feedback.classList.add('show', 'error');
                 selectedPungTiles = [];
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('pungs', false, {
+                        lesson: 'lesson_8',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             }
         }
 
@@ -1357,55 +2589,83 @@
         // LESSON 9: Find Chows Practice
         // =================
         const chowTiles = [
-            { id: 1, symbol: '🎋', label: '1 Bam', type: 'bamboo', num: 1 },
-            { id: 2, symbol: '🎋🎋', label: '2 Bam', type: 'bamboo', num: 2 },
-            { id: 3, symbol: '🎋🎋🎋', label: '3 Bam', type: 'bamboo', num: 3 },
-            { id: 4, symbol: '⚫⚫⚫⚫⚫', label: '5 Dot', type: 'dot', num: 5 },
-            { id: 5, symbol: '⚫⚫⚫⚫⚫⚫', label: '6 Dot', type: 'dot', num: 6 },
-            { id: 6, symbol: '⚫⚫⚫⚫⚫⚫⚫', label: '7 Dot', type: 'dot', num: 7 },
-            { id: 7, symbol: '東', label: 'East', type: 'honor', num: 0 },
-            { id: 8, symbol: '南', label: 'South', type: 'honor', num: 0 },
-            { id: 9, symbol: '萬', label: '1 Char', type: 'char', num: 1 },
-            { id: 10, symbol: '二萬', label: '2 Char', type: 'char', num: 2 },
-            { id: 11, symbol: '⚫⚫', label: '2 Dot', type: 'dot', num: 2 },
-            { id: 12, symbol: '⚫⚫⚫⚫⚫⚫⚫⚫', label: '8 Dot', type: 'dot', num: 8 }
+            { id: 1, type: 'bamboo', value: 1 },
+            { id: 2, type: 'bamboo', value: 2 },
+            { id: 3, type: 'bamboo', value: 3 },
+            { id: 4, type: 'dot', value: 5 },
+            { id: 5, type: 'dot', value: 6 },
+            { id: 6, type: 'dot', value: 7 },
+            { id: 7, type: 'wind', value: 'east' },
+            { id: 8, type: 'wind', value: 'south' },
+            { id: 9, type: 'character', value: 1 },
+            { id: 10, type: 'character', value: 2 },
+            { id: 11, type: 'dot', value: 2 },
+            { id: 12, type: 'dot', value: 8 }
         ];
 
         let selectedChowTiles = [];
+        let chowAreaHandler = null;
 
         function initChowPractice() {
             const practiceArea = document.getElementById('chowPracticeArea');
             if (!practiceArea) return;
 
+            // Clean up old event listener
+            if (chowAreaHandler) {
+                practiceArea.removeEventListener('click', chowAreaHandler);
+                practiceArea.removeEventListener('keypress', chowAreaHandler);
+            }
+
             practiceArea.innerHTML = '';
             const shuffled = [...chowTiles].sort(() => Math.random() - 0.5);
 
             shuffled.forEach(tile => {
-                const tileElement = document.createElement('div');
-                tileElement.className = 'tile';
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.id = tile.id;
                 tileElement.dataset.type = tile.type;
-                tileElement.dataset.num = tile.num;
-                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
-                tileElement.onclick = () => selectChowTile(tileElement);
+                tileElement.dataset.value = tile.value;
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
-                tileElement.setAttribute('aria-label', `${tile.label} tile`);
+                tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile`);
                 tileElement.setAttribute('tabindex', '0');
                 practiceArea.appendChild(tileElement);
             });
+
+            // Event delegation
+            chowAreaHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectChowTile(tile, tile.dataset.id);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    selectChowTile(tile, tile.dataset.id);
+                }
+            };
+
+            practiceArea.addEventListener('click', chowAreaHandler);
+            practiceArea.addEventListener('keypress', chowAreaHandler);
         }
 
-        function selectChowTile(element) {
+        function selectChowTile(element, tileId) {
             if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
                 return;
             }
             element.classList.toggle('selected');
-            const tileId = parseInt(element.dataset.id);
             const index = selectedChowTiles.indexOf(tileId);
             if (index > -1) {
                 selectedChowTiles.splice(index, 1);
             } else {
                 selectedChowTiles.push(tileId);
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('tileClick');
+                }
             }
         }
 
@@ -1416,12 +2676,18 @@
             if (selectedChowTiles.length === 0) {
                 feedback.textContent = 'Please select some tiles first!';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
             if (selectedChowTiles.length !== 6) {
                 feedback.textContent = 'There are 2 Chows to find (6 tiles total). Keep looking!';
                 feedback.classList.add('show', 'error');
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
                 return;
             }
 
@@ -1431,12 +2697,13 @@
             const groups = {};
             selectedTileData.forEach(tile => {
                 if (!groups[tile.type]) groups[tile.type] = [];
-                groups[tile.type].push(tile.num);
+                if (typeof tile.value === 'number') {
+                    groups[tile.type].push(tile.value);
+                }
             });
 
             let validChows = 0;
             for (let type in groups) {
-                if (type === 'honor') continue; // honors can't form chows
                 const nums = groups[type].sort((a, b) => a - b);
                 if (nums.length === 3 && nums[1] === nums[0] + 1 && nums[2] === nums[1] + 1) {
                     validChows++;
@@ -1444,15 +2711,25 @@
             }
 
             if (validChows === 2) {
-                document.querySelectorAll('#chowPracticeArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#chowPracticeArea .selected').forEach(tile => {
                     tile.classList.remove('selected');
                     tile.classList.add('correct');
                 });
                 feedback.textContent = 'Excellent! You found both Chows! 🎉';
                 feedback.classList.add('show', 'success');
                 document.getElementById('chowNextBtn').disabled = false;
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('chows', true, {
+                        lesson: 'lesson_9',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             } else {
-                document.querySelectorAll('#chowPracticeArea .tile.selected').forEach(tile => {
+                document.querySelectorAll('#chowPracticeArea .selected').forEach(tile => {
                     tile.classList.add('incorrect');
                     setTimeout(() => {
                         tile.classList.remove('incorrect', 'selected');
@@ -1461,6 +2738,16 @@
                 feedback.textContent = 'Not quite! Remember: Chows are 3 consecutive numbers in the SAME suit.';
                 feedback.classList.add('show', 'error');
                 selectedChowTiles = [];
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('chows', false, {
+                        lesson: 'lesson_9',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             }
         }
 
@@ -1477,53 +2764,54 @@
         const winningHandScenarios = [
             {
                 hand: [
-                    { symbol: '🎋', label: '1 Bam' },
-                    { symbol: '🎋🎋', label: '2 Bam' },
-                    { symbol: '🎋🎋🎋', label: '3 Bam' },
-                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
-                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
-                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot' },
-                    { symbol: '東', label: 'East' },
-                    { symbol: '東', label: 'East' },
-                    { symbol: '東', label: 'East' },
-                    { symbol: '萬', label: '1 Char' },
-                    { symbol: '萬', label: '1 Char' },
-                    { symbol: '萬', label: '1 Char' },
-                    { symbol: '中', label: 'Red', style: 'color: red;' }
+                    { type: 'bamboo', value: 1 },
+                    { type: 'bamboo', value: 2 },
+                    { type: 'bamboo', value: 3 },
+                    { type: 'dot', value: 5 },
+                    { type: 'dot', value: 5 },
+                    { type: 'dot', value: 5 },
+                    { type: 'wind', value: 'east' },
+                    { type: 'wind', value: 'east' },
+                    { type: 'wind', value: 'east' },
+                    { type: 'character', value: 1 },
+                    { type: 'character', value: 1 },
+                    { type: 'character', value: 1 },
+                    { type: 'dragon', value: 'red' }
                 ],
                 options: [
-                    { symbol: '中', label: 'Red', correct: true, style: 'color: red;' },
-                    { symbol: '發', label: 'Green', correct: false, style: 'color: green;' },
-                    { symbol: '⚫', label: '1 Dot', correct: false }
+                    { type: 'dragon', value: 'red', correct: true },
+                    { type: 'dragon', value: 'green', correct: false },
+                    { type: 'dot', value: 1, correct: false }
                 ],
                 explanation: 'You need another Red Dragon to complete the pair!'
             },
             {
                 hand: [
-                    { symbol: '⚫', label: '1 Dot' },
-                    { symbol: '⚫⚫', label: '2 Dot' },
-                    { symbol: '⚫⚫⚫', label: '3 Dot' },
-                    { symbol: '🎋🎋🎋🎋🎋🎋', label: '6 Bam' },
-                    { symbol: '🎋🎋🎋🎋🎋🎋🎋', label: '7 Bam' },
-                    { symbol: '🎋🎋🎋🎋🎋🎋🎋🎋', label: '8 Bam' },
-                    { symbol: '南', label: 'South' },
-                    { symbol: '南', label: 'South' },
-                    { symbol: '南', label: 'South' },
-                    { symbol: '二萬', label: '2 Char' },
-                    { symbol: '二萬', label: '2 Char' },
-                    { symbol: '二萬', label: '2 Char' },
-                    { symbol: '⚫⚫⚫⚫', label: '4 Dot' }
+                    { type: 'dot', value: 1 },
+                    { type: 'dot', value: 2 },
+                    { type: 'dot', value: 3 },
+                    { type: 'bamboo', value: 6 },
+                    { type: 'bamboo', value: 7 },
+                    { type: 'bamboo', value: 8 },
+                    { type: 'wind', value: 'south' },
+                    { type: 'wind', value: 'south' },
+                    { type: 'wind', value: 'south' },
+                    { type: 'character', value: 2 },
+                    { type: 'character', value: 2 },
+                    { type: 'character', value: 2 },
+                    { type: 'dot', value: 4 }
                 ],
                 options: [
-                    { symbol: '⚫⚫⚫⚫', label: '4 Dot', correct: true },
-                    { symbol: '⚫⚫⚫⚫⚫', label: '5 Dot', correct: false },
-                    { symbol: '南', label: 'South', correct: false }
+                    { type: 'dot', value: 4, correct: true },
+                    { type: 'dot', value: 5, correct: false },
+                    { type: 'wind', value: 'south', correct: false }
                 ],
                 explanation: 'You need another 4 Dot to complete the pair!'
             }
         ];
 
         let currentScenario = 0;
+        let winHandOptionsHandler = null;
 
         function initWinningHandPractice() {
             const currentHand = document.getElementById('currentHand');
@@ -1531,41 +2819,67 @@
 
             if (!currentHand || !winningTileOptions) return;
 
+            // Clean up old event listener
+            if (winHandOptionsHandler) {
+                winningTileOptions.removeEventListener('click', winHandOptionsHandler);
+                winningTileOptions.removeEventListener('keypress', winHandOptionsHandler);
+            }
+
             const scenario = winningHandScenarios[currentScenario];
 
             // Display current hand
             currentHand.innerHTML = '';
             scenario.hand.forEach(tile => {
-                const tileElement = document.createElement('div');
-                tileElement.className = 'tile';
-                if (tile.style) tileElement.setAttribute('style', tile.style);
-                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 currentHand.appendChild(tileElement);
             });
 
             // Display options
             winningTileOptions.innerHTML = '';
             scenario.options.forEach((tile, index) => {
-                const tileElement = document.createElement('div');
-                tileElement.className = 'tile';
-                if (tile.style) tileElement.setAttribute('style', tile.style);
+                const tileElement = window.tileRenderer.createTileElement(tile.type, tile.value);
                 tileElement.dataset.correct = tile.correct;
-                tileElement.innerHTML = `${tile.symbol}<div class="tile-label">${tile.label}</div>`;
-                tileElement.onclick = () => checkWinningTile(tileElement, tile.correct, scenario.explanation);
+                tileElement.dataset.explanation = scenario.explanation;
+                // No inline event handlers
                 tileElement.setAttribute('role', 'button');
-                tileElement.setAttribute('aria-label', `${tile.label} tile option`);
+                tileElement.setAttribute('aria-label', `${tile.type} ${tile.value} tile option`);
                 tileElement.setAttribute('tabindex', '0');
                 winningTileOptions.appendChild(tileElement);
             });
+
+            // Event delegation
+            winHandOptionsHandler = function(e) {
+                const tile = e.target.closest('.tile');
+                if (!tile || !tile.dataset.correct) return;
+
+                if (e.type === 'keypress') {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        checkWinningTile(tile, tile.dataset.correct === 'true', tile.dataset.explanation);
+                    }
+                    return;
+                }
+
+                if (e.type === 'click') {
+                    checkWinningTile(tile, tile.dataset.correct === 'true', tile.dataset.explanation);
+                }
+            };
+
+            winningTileOptions.addEventListener('click', winHandOptionsHandler);
+            winningTileOptions.addEventListener('keypress', winHandOptionsHandler);
         }
 
         function checkWinningTile(element, isCorrect, explanation) {
             const feedback = document.getElementById('winHandFeedback');
             feedback.classList.remove('show', 'success', 'error');
 
-            // Disable all option tiles
+            // Disable all option tiles by removing event handler
+            const winningTileOptions = document.getElementById('winningTileOptions');
+            if (winHandOptionsHandler && winningTileOptions) {
+                winningTileOptions.removeEventListener('click', winHandOptionsHandler);
+                winningTileOptions.removeEventListener('keypress', winHandOptionsHandler);
+            }
             document.querySelectorAll('#winningTileOptions .tile').forEach(tile => {
-                tile.onclick = null;
                 tile.style.cursor = 'default';
             });
 
@@ -1574,18 +2888,37 @@
                 feedback.textContent = `Correct! ${explanation}`;
                 feedback.classList.add('show', 'success');
                 document.getElementById('winHandNextBtn').disabled = false;
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('success');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('winning_hand', true, {
+                        lesson: 'lesson_12',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
             } else {
                 element.classList.add('incorrect');
                 feedback.textContent = `Not quite. ${explanation}`;
                 feedback.classList.add('show', 'error');
+
+                if (window.learningSystem && window.learningSystem.audioManager) {
+                    window.learningSystem.audioManager.play('error');
+                }
+                if (window.learningSystem && window.learningSystem.mistakeAnalyzer) {
+                    window.learningSystem.mistakeAnalyzer.recordAttempt('winning_hand', false, {
+                        lesson: 'lesson_12',
+                        difficulty: localStorage.getItem('mahjong_difficulty') || 'medium'
+                    });
+                }
+
                 setTimeout(() => {
                     element.classList.remove('incorrect');
-                    // Re-enable tiles
-                    document.querySelectorAll('#winningTileOptions .tile').forEach(tile => {
+                    // Re-enable tiles (event delegation handler already attached to parent)
+                    document.querySelectorAll('#winningTileOptions .mahjong-tile').forEach(tile => {
                         tile.style.cursor = 'pointer';
-                        const isCorrectTile = tile.dataset.correct === 'true';
-                        const scenario = winningHandScenarios[currentScenario];
-                        tile.onclick = () => checkWinningTile(tile, isCorrectTile, scenario.explanation);
+                        // No need to re-attach onclick - winHandOptionsHandler already handles clicks
                     });
                 }, 1500);
             }
@@ -1600,11 +2933,26 @@
 
         // Initialize exercises when switching to their lessons
         const originalSwitchLesson = switchLesson;
-        function switchLesson(lessonNum) {
+        switchLesson = function(lessonNum) {
             originalSwitchLesson(lessonNum);
-            if (lessonNum === 8) initPungPractice();
-            if (lessonNum === 9) initChowPractice();
-            if (lessonNum === 12) initWinningHandPractice();
+            if (lessonNum === 7) window.waitForTileRenderer(initPractice, 'initPractice-L7');
+            if (lessonNum === 8) window.waitForTileRenderer(initPungPractice, 'initPungPractice-L8');
+            if (lessonNum === 9) window.waitForTileRenderer(initChowPractice, 'initChowPractice-L9');
+            if (lessonNum === 12) window.waitForTileRenderer(initWinningHandPractice, 'initWinningHandPractice-L12');
+        };
+
+        // Load saved progress
+        try {
+            const saved = JSON.parse(localStorage.getItem('mahjong_progress'));
+            if (saved && saved.completed) {
+                saved.completed.forEach(num => {
+                    completedLessons.add(num);
+                    document.querySelector(`.lesson-item[data-lesson="${num}"]`)?.classList.add('completed');
+                });
+                updateProgress();
+            }
+        } catch (e) {
+            console.error('Error loading progress:', e);
         }
     </script>
 </body>

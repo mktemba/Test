@@ -1,0 +1,470 @@
+/**
+ * TileRenderer.css
+ * Styles for SVG-based Mahjong tiles
+ *
+ * Includes:
+ * - Base tile styles
+ * - Interactive states (hover, focus, selected)
+ * - Feedback states (correct, incorrect)
+ * - Animations and transitions
+ * - Accessibility features
+ * - Responsive sizing
+ */
+
+/* ===================================
+   Base Tile Styles
+   =================================== */
+
+.tile {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    vertical-align: middle;
+    margin: 4px;
+}
+
+.tile svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ===================================
+   Interactive States
+   =================================== */
+
+.tile:hover {
+    transform: translateY(-4px) scale(1.05);
+    z-index: 10;
+}
+
+.tile:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.tile:focus,
+.tile.focused {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* High contrast mode focus indicator */
+@media (prefers-contrast: high) {
+    .tile:focus,
+    .tile.focused {
+        outline: 4px solid #000;
+        outline-offset: 3px;
+    }
+}
+
+/* ===================================
+   Selected State
+   =================================== */
+
+.tile.selected {
+    transform: translateY(-6px) scale(1.08);
+    filter: drop-shadow(0 6px 12px rgba(59, 130, 246, 0.4));
+}
+
+.tile.selected svg rect[fill*="tile-bg-gradient"] {
+    stroke: #3b82f6;
+    stroke-width: 4;
+}
+
+/* ===================================
+   Feedback States
+   =================================== */
+
+.tile.correct {
+    animation: pulse-correct 0.6s ease-out;
+    filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.5));
+}
+
+.tile.correct svg rect[fill*="tile-bg-gradient"] {
+    stroke: #22c55e;
+    stroke-width: 4;
+}
+
+.tile.incorrect {
+    animation: shake 0.4s ease-out;
+    filter: drop-shadow(0 4px 8px rgba(239, 68, 68, 0.5));
+}
+
+.tile.incorrect svg rect[fill*="tile-bg-gradient"] {
+    stroke: #ef4444;
+    stroke-width: 4;
+}
+
+/* ===================================
+   Animations
+   =================================== */
+
+@keyframes pulse-correct {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-8px);
+    }
+    75% {
+        transform: translateX(8px);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tile.fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+/* Staggered animation for hands */
+.tile-hand .tile {
+    animation: fade-in 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+.tile-hand .tile:nth-child(1) { animation-delay: 0.05s; }
+.tile-hand .tile:nth-child(2) { animation-delay: 0.1s; }
+.tile-hand .tile:nth-child(3) { animation-delay: 0.15s; }
+.tile-hand .tile:nth-child(4) { animation-delay: 0.2s; }
+.tile-hand .tile:nth-child(5) { animation-delay: 0.25s; }
+.tile-hand .tile:nth-child(6) { animation-delay: 0.3s; }
+.tile-hand .tile:nth-child(7) { animation-delay: 0.35s; }
+.tile-hand .tile:nth-child(8) { animation-delay: 0.4s; }
+.tile-hand .tile:nth-child(9) { animation-delay: 0.45s; }
+.tile-hand .tile:nth-child(10) { animation-delay: 0.5s; }
+.tile-hand .tile:nth-child(11) { animation-delay: 0.55s; }
+.tile-hand .tile:nth-child(12) { animation-delay: 0.6s; }
+.tile-hand .tile:nth-child(13) { animation-delay: 0.65s; }
+.tile-hand .tile:nth-child(14) { animation-delay: 0.7s; }
+
+/* ===================================
+   Container Layouts
+   =================================== */
+
+.tile-display,
+.tile-hand,
+.tile-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 12px;
+}
+
+/* ===================================
+   Accessibility - Reduced Motion
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .tile,
+    .tile:hover,
+    .tile:active,
+    .tile.selected,
+    .tile.correct,
+    .tile.incorrect {
+        transition: none;
+        animation: none;
+        transform: none;
+    }
+
+    .tile.selected {
+        outline: 3px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+    .tile.correct {
+        outline: 3px solid #22c55e;
+        outline-offset: 2px;
+    }
+
+    .tile.incorrect {
+        outline: 3px solid #ef4444;
+        outline-offset: 2px;
+    }
+}
+
+/* Reduced motion class for programmatic control */
+body.reduced-motion .tile,
+body.reduced-motion .tile:hover,
+body.reduced-motion .tile:active,
+body.reduced-motion .tile.selected,
+body.reduced-motion .tile.correct,
+body.reduced-motion .tile.incorrect {
+    transition: none;
+    animation: none;
+    transform: none;
+}
+
+body.reduced-motion .tile.selected {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+body.reduced-motion .tile.correct {
+    outline: 3px solid #22c55e;
+    outline-offset: 2px;
+}
+
+body.reduced-motion .tile.incorrect {
+    outline: 3px solid #ef4444;
+    outline-offset: 2px;
+}
+
+/* ===================================
+   High Contrast Mode
+   =================================== */
+
+@media (prefers-contrast: high) {
+    .tile svg rect[fill*="tile-bg-gradient"] {
+        stroke-width: 3;
+    }
+
+    .tile.selected svg rect[fill*="tile-bg-gradient"] {
+        stroke-width: 5;
+    }
+
+    .tile.correct svg rect[fill*="tile-bg-gradient"],
+    .tile.incorrect svg rect[fill*="tile-bg-gradient"] {
+        stroke-width: 5;
+    }
+}
+
+body.high-contrast .tile svg rect[fill*="tile-bg-gradient"] {
+    stroke-width: 3;
+}
+
+body.high-contrast .tile.selected svg rect[fill*="tile-bg-gradient"],
+body.high-contrast .tile.correct svg rect[fill*="tile-bg-gradient"],
+body.high-contrast .tile.incorrect svg rect[fill*="tile-bg-gradient"] {
+    stroke-width: 5;
+}
+
+/* ===================================
+   Responsive Sizing
+   =================================== */
+
+/* Mobile: smaller tiles */
+@media (max-width: 640px) {
+    .tile-display,
+    .tile-hand {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .tile {
+        margin: 2px;
+    }
+
+    .tile:hover {
+        transform: translateY(-2px) scale(1.03);
+    }
+}
+
+/* Tablet and up: normal tiles */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .tile-display,
+    .tile-hand {
+        gap: 8px;
+        padding: 12px;
+    }
+}
+
+/* Desktop: larger tiles */
+@media (min-width: 1025px) {
+    .tile-display,
+    .tile-hand {
+        gap: 10px;
+        padding: 16px;
+    }
+}
+
+/* ===================================
+   Disabled State
+   =================================== */
+
+.tile.disabled,
+.tile:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ===================================
+   Loading State
+   =================================== */
+
+.tile.loading {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.tile.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ===================================
+   Dark Mode Support
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+    .tile svg rect[fill*="tile-bg-gradient"] {
+        filter: brightness(0.9);
+    }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+
+@media print {
+    .tile {
+        margin: 2px;
+        break-inside: avoid;
+    }
+
+    .tile:hover,
+    .tile:active,
+    .tile:focus {
+        transform: none;
+        outline: none;
+    }
+
+    .tile.selected {
+        border: 2px solid #000;
+    }
+}
+
+/* ===================================
+   Utility Classes
+   =================================== */
+
+.tile-small {
+    width: 40px;
+    height: 60px;
+}
+
+.tile-medium {
+    width: 60px;
+    height: 90px;
+}
+
+.tile-large {
+    width: 80px;
+    height: 120px;
+}
+
+.tile-xlarge {
+    width: 100px;
+    height: 150px;
+}
+
+/* No interaction */
+.tile-static {
+    cursor: default;
+    pointer-events: none;
+}
+
+.tile-static:hover {
+    transform: none;
+}
+
+/* Compact display (less spacing) */
+.tile-display.compact,
+.tile-hand.compact {
+    gap: 4px;
+    padding: 4px;
+}
+
+.tile-display.compact .tile,
+.tile-hand.compact .tile {
+    margin: 1px;
+}
+
+/* ===================================
+   Special Effects
+   =================================== */
+
+/* Highlight effect for tutorials */
+.tile.highlight {
+    animation: highlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes highlight-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+}
+
+/* Glow effect */
+.tile.glow {
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+}
+
+/* Flip animation for revealing tiles */
+@keyframes flip {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(90deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
+}
+
+.tile.flip {
+    animation: flip 0.6s ease-in-out;
+}
