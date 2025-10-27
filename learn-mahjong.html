@@ -2465,6 +2465,7 @@
         const originalSwitchLesson = switchLesson;
         switchLesson = function(lessonNum) {
             originalSwitchLesson(lessonNum);
+            if (lessonNum === 7) window.waitForTileRenderer(initPractice);
             if (lessonNum === 8) window.waitForTileRenderer(initPungPractice);
             if (lessonNum === 9) window.waitForTileRenderer(initChowPractice);
             if (lessonNum === 12) window.waitForTileRenderer(initWinningHandPractice);
