@@ -1393,13 +1393,61 @@
         // Initialize TileRenderer globally
         window.tileRenderer = new TileRenderer();
 
+        /**
+         * STORAGE QUOTA MANAGEMENT DOCUMENTATION
+         *
+         * MAX_STORAGE_BYTES: 3MB Limit Justification
+         *
+         * DATA MODEL CALCULATIONS:
+         * Per Practice Session:
+         * - Mistake record: ~200 bytes (lesson ID, timestamp, accuracy, metadata)
+         * - Performance history: ~150 bytes per attempt
+         * - Difficulty stats: ~100 bytes per difficulty level
+         * - Scenario progress: ~50 bytes per scenario
+         *
+         * Estimated Storage Requirements:
+         * - 100 practice sessions: ~50KB (100 × 500 bytes average)
+         * - 500 practice sessions: ~250KB
+         * - 1000 practice sessions: ~500KB
+         * - 2000 practice sessions: ~1MB
+         * - 6000 practice sessions: ~3MB (our limit)
+         *
+         * 3MB LIMIT RATIONALE:
+         * - Supports 6000+ practice sessions (2+ years of daily practice)
+         * - Conservative: 60% of minimum browser quota (5MB)
+         * - Leaves 2MB headroom for browser variations
+         * - Compatible with all modern browsers (Safari 5MB, Chrome 10MB, Firefox 10MB)
+         *
+         * BROWSER COMPATIBILITY:
+         * - Safari: 5MB limit → 3MB is 60% (safe)
+         * - Chrome: 10MB limit → 3MB is 30% (very safe)
+         * - Firefox: 10MB limit → 3MB is 30% (very safe)
+         * - Edge: 10MB limit → 3MB is 30% (very safe)
+         *
+         * VALIDATION STATUS: ⚠️ Initial design estimates - REQUIRES MONITORING
+         * - Add telemetry to track actual storage usage patterns
+         * - Monitor user data growth over time
+         * - Adjust limit based on real-world data
+         *
+         * TODO:
+         * - Add storage usage analytics
+         * - Implement graduated alerts (75%, 85%, 95% thresholds)
+         * - A/B test different limits if issues arise
+         */
+
         // Create quota-aware data manager for Enhanced Learning System
         const simpleDataManager = {
             // Track data age for LRU cleanup
             _accessTimes: new Map(),
 
-            // Max storage size (conservative limit: 3MB out of typical 5-10MB quota)
-            MAX_STORAGE_BYTES: 3 * 1024 * 1024,
+            // Max storage size (see documentation above for justification)
+            MAX_STORAGE_BYTES: 3 * 1024 * 1024, // 3MB - supports 6000+ sessions
+
+            // Cleanup attempt counter (for graduated strategy)
+            _cleanupAttempts: 0,
+
+            // User has been warned about storage limits
+            _userWarned: false,
 
             /**
              * Estimate current localStorage usage in bytes
@@ -1416,10 +1464,104 @@
             },
 
             /**
-             * Clean up old data using LRU strategy
+             * Export user data for backup before cleanup
+             * @returns {Object} All user data as JSON object
              */
-            _cleanup() {
-                console.warn('[Storage] Quota approaching limit, cleaning up old data');
+            _exportUserData() {
+                const exportData = {};
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        exportData[key] = localStorage[key];
+                    }
+                }
+                return exportData;
+            },
+
+            /**
+             * Trigger data export download
+             */
+            _downloadBackup() {
+                const exportData = this._exportUserData();
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mahjong-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            },
+
+            /**
+             * Get user consent for data cleanup
+             * @param {number} percentageToRemove - Percentage of data to remove (5, 10, or 20)
+             * @returns {Promise<boolean>} True if user consents
+             */
+            async _getUserConsentForCleanup(percentageToRemove) {
+                return new Promise((resolve) => {
+                    const currentSize = this._estimateStorageSize();
+                    const currentMB = (currentSize / 1024 / 1024).toFixed(2);
+                    const limitMB = (this.MAX_STORAGE_BYTES / 1024 / 1024).toFixed(2);
+
+                    const message = `Storage Limit Reached\n\n` +
+                        `Current usage: ${currentMB}MB / ${limitMB}MB\n\n` +
+                        `To continue saving progress, we need to remove approximately ${percentageToRemove}% of your oldest practice data.\n\n` +
+                        `Options:\n` +
+                        `• Click "Download Backup" to save your data first\n` +
+                        `• Click "OK" to proceed with cleanup\n` +
+                        `• Click "Cancel" to skip (new progress may not be saved)\n\n` +
+                        `Would you like to download a backup before cleanup?`;
+
+                    // Show backup option first
+                    if (confirm(message)) {
+                        this._downloadBackup();
+                        setTimeout(() => {
+                            const proceedMessage = `Backup downloaded!\n\nProceed with removing ${percentageToRemove}% of oldest practice data?`;
+                            resolve(confirm(proceedMessage));
+                        }, 500);
+                    } else {
+                        const skipBackupMessage = `Skip backup and proceed with cleanup?\n\n` +
+                            `Warning: ${percentageToRemove}% of your oldest practice data will be permanently removed.`;
+                        resolve(confirm(skipBackupMessage));
+                    }
+                });
+            },
+
+            /**
+             * Clean up old data using graduated LRU strategy
+             * IMPORTANT: NEVER deletes data without user consent
+             *
+             * Graduated Strategy:
+             * - 1st attempt: Remove 5% of oldest data (minimal impact)
+             * - 2nd attempt: Remove 10% of oldest data (moderate impact)
+             * - 3rd+ attempt: Remove 20% of oldest data (aggressive cleanup)
+             */
+            async _cleanup() {
+                // Determine cleanup percentage based on attempt count
+                let cleanupPercentage;
+                if (this._cleanupAttempts === 0) {
+                    cleanupPercentage = 5;  // First attempt: gentle cleanup
+                } else if (this._cleanupAttempts === 1) {
+                    cleanupPercentage = 10; // Second attempt: moderate cleanup
+                } else {
+                    cleanupPercentage = 20; // Third+ attempt: aggressive cleanup
+                }
+
+                this._cleanupAttempts++;
+
+                console.warn(`[Storage] Quota approaching limit, requesting cleanup (${cleanupPercentage}%)`);
+
+                // Get user consent
+                const userConsents = await this._getUserConsentForCleanup(cleanupPercentage);
+                if (!userConsents) {
+                    console.warn('[Storage] User declined cleanup, data may not be saved');
+                    throw new Error('User declined data cleanup');
+                }
+
+                // User consented - proceed with cleanup
+                console.log(`[Storage] User consented to ${cleanupPercentage}% cleanup`);
 
                 // Get all mahjong keys with access times
                 const entries = [];
@@ -1433,16 +1575,56 @@
                 // Sort by access time (oldest first)
                 entries.sort((a, b) => a.accessTime - b.accessTime);
 
-                // Remove oldest 20% of data
-                const removeCount = Math.ceil(entries.length * 0.2);
+                // Remove specified percentage of oldest data
+                const removeCount = Math.ceil(entries.length * (cleanupPercentage / 100));
+                let removedCount = 0;
+                let freedBytes = 0;
+
                 for (let i = 0; i < removeCount; i++) {
                     try {
-                        localStorage.removeItem(entries[i].key);
-                        this._accessTimes.delete(entries[i].key);
-                        console.log(`[Storage] Removed old data: ${entries[i].key}`);
+                        const key = entries[i].key;
+                        const value = localStorage[key];
+                        const size = (key.length + (value ? value.length : 0)) * 2;
+
+                        localStorage.removeItem(key);
+                        this._accessTimes.delete(key);
+                        removedCount++;
+                        freedBytes += size;
+
+                        console.log(`[Storage] Removed old data: ${key} (${(size / 1024).toFixed(2)}KB)`);
                     } catch (e) {
-                        // Ignore removal errors
+                        console.error(`[Storage] Error removing ${entries[i].key}:`, e);
                     }
+                }
+
+                console.log(`[Storage] Cleanup complete: Removed ${removedCount} items, freed ${(freedBytes / 1024).toFixed(2)}KB`);
+
+                // Reset attempt counter on successful cleanup
+                if (removedCount > 0) {
+                    this._cleanupAttempts = 0;
+                }
+            },
+
+            /**
+             * Show warning to user when approaching storage limit
+             */
+            _showStorageWarning() {
+                if (this._userWarned) return; // Only warn once per session
+
+                const currentSize = this._estimateStorageSize();
+                const percentUsed = (currentSize / this.MAX_STORAGE_BYTES) * 100;
+
+                if (percentUsed >= 85) {
+                    const message = `Storage Warning\n\n` +
+                        `You're using ${percentUsed.toFixed(0)}% of available storage.\n\n` +
+                        `Consider downloading a backup of your progress:\n` +
+                        `Settings → Export Progress Data\n\n` +
+                        `This warning won't show again this session.`;
+
+                    alert(message);
+                    this._userWarned = true;
+
+                    console.warn(`[Storage] User warned about ${percentUsed.toFixed(0)}% storage usage`);
                 }
             },
 
@@ -1456,17 +1638,31 @@
                 }
             },
 
-            set: (key, value) => {
+            set: async function(key, value) {
                 const fullKey = `mahjong_${key}`;
                 const data = JSON.stringify(value);
 
-                // Check if we're approaching quota limit
+                // Check current storage usage
                 const currentSize = this._estimateStorageSize();
                 const newDataSize = (fullKey.length + data.length) * 2;
+                const percentUsed = (currentSize / this.MAX_STORAGE_BYTES) * 100;
 
+                // Show warning at 85% threshold
+                if (percentUsed >= 85) {
+                    this._showStorageWarning();
+                }
+
+                // Check if we're approaching quota limit (95% threshold)
                 if (currentSize + newDataSize > this.MAX_STORAGE_BYTES) {
                     console.warn(`[Storage] Approaching quota limit (${(currentSize / 1024 / 1024).toFixed(2)}MB / ${(this.MAX_STORAGE_BYTES / 1024 / 1024).toFixed(2)}MB)`);
-                    this._cleanup();
+
+                    try {
+                        await this._cleanup();
+                    } catch (cleanupError) {
+                        // User declined cleanup
+                        console.warn('[Storage] Cleanup cancelled by user');
+                        return; // Don't try to save if user declined cleanup
+                    }
                 }
 
                 try {
@@ -1475,25 +1671,41 @@
                 } catch (e) {
                     // Handle QuotaExceededError
                     if (e.name === 'QuotaExceededError' || e.code === 22) {
-                        console.error('[Storage] Quota exceeded, attempting cleanup');
-                        this._cleanup();
+                        console.error('[Storage] Quota exceeded despite cleanup, requesting additional cleanup');
 
-                        // Try again after cleanup
                         try {
-                            localStorage.setItem(fullKey, data);
-                            this._accessTimes.set(fullKey, Date.now());
-                        } catch (e2) {
-                            // Still failing - notify user
-                            console.error('[Storage] Failed to save data after cleanup:', e2);
-                            const msg = 'Storage limit reached. Some progress may not be saved. Consider clearing old data.';
-                            // Show user-friendly warning
+                            await this._cleanup();
+
+                            // Try again after cleanup
+                            try {
+                                localStorage.setItem(fullKey, data);
+                                this._accessTimes.set(fullKey, Date.now());
+                                console.log('[Storage] Data saved successfully after cleanup');
+                            } catch (e2) {
+                                // Still failing after cleanup
+                                console.error('[Storage] Failed to save data after cleanup:', e2);
+                                const msg = 'Unable to save progress. Storage is full even after cleanup.';
+
+                                // Show user-friendly error
+                                if (document.getElementById('feedback')) {
+                                    const feedback = document.getElementById('feedback');
+                                    feedback.textContent = msg;
+                                    feedback.classList.add('show', 'error');
+                                    setTimeout(() => feedback.classList.remove('show'), 5000);
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+                        } catch (cleanupError) {
+                            // User declined cleanup
+                            console.warn('[Storage] User declined cleanup, data not saved');
+                            const msg = 'Progress not saved. Storage cleanup was cancelled.';
+
                             if (document.getElementById('feedback')) {
                                 const feedback = document.getElementById('feedback');
                                 feedback.textContent = msg;
-                                feedback.classList.add('show', 'error');
+                                feedback.classList.add('show', 'warning');
                                 setTimeout(() => feedback.classList.remove('show'), 5000);
-                            } else {
-                                alert(msg);
                             }
                         }
                     } else {
