@@ -1393,21 +1393,126 @@
         // Initialize TileRenderer globally
         window.tileRenderer = new TileRenderer();
 
-        // Create simple data manager for Enhanced Learning System
+        // Create quota-aware data manager for Enhanced Learning System
         const simpleDataManager = {
+            // Track data age for LRU cleanup
+            _accessTimes: new Map(),
+
+            // Max storage size (conservative limit: 3MB out of typical 5-10MB quota)
+            MAX_STORAGE_BYTES: 3 * 1024 * 1024,
+
+            /**
+             * Estimate current localStorage usage in bytes
+             */
+            _estimateStorageSize() {
+                let total = 0;
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        const value = localStorage[key];
+                        total += key.length + (value ? value.length : 0);
+                    }
+                }
+                return total * 2; // UTF-16 uses 2 bytes per character
+            },
+
+            /**
+             * Clean up old data using LRU strategy
+             */
+            _cleanup() {
+                console.warn('[Storage] Quota approaching limit, cleaning up old data');
+
+                // Get all mahjong keys with access times
+                const entries = [];
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        const accessTime = this._accessTimes.get(key) || 0;
+                        entries.push({ key, accessTime });
+                    }
+                }
+
+                // Sort by access time (oldest first)
+                entries.sort((a, b) => a.accessTime - b.accessTime);
+
+                // Remove oldest 20% of data
+                const removeCount = Math.ceil(entries.length * 0.2);
+                for (let i = 0; i < removeCount; i++) {
+                    try {
+                        localStorage.removeItem(entries[i].key);
+                        this._accessTimes.delete(entries[i].key);
+                        console.log(`[Storage] Removed old data: ${entries[i].key}`);
+                    } catch (e) {
+                        // Ignore removal errors
+                    }
+                }
+            },
+
             get: (key) => {
                 try {
-                    return JSON.parse(localStorage.getItem(`mahjong_${key}`));
+                    const fullKey = `mahjong_${key}`;
+                    this._accessTimes.set(fullKey, Date.now());
+                    return JSON.parse(localStorage.getItem(fullKey));
                 } catch {
                     return null;
                 }
             },
+
             set: (key, value) => {
-                try {
-                    localStorage.setItem(`mahjong_${key}`, JSON.stringify(value));
-                } catch (e) {
-                    console.error('Storage error:', e);
+                const fullKey = `mahjong_${key}`;
+                const data = JSON.stringify(value);
+
+                // Check if we're approaching quota limit
+                const currentSize = this._estimateStorageSize();
+                const newDataSize = (fullKey.length + data.length) * 2;
+
+                if (currentSize + newDataSize > this.MAX_STORAGE_BYTES) {
+                    console.warn(`[Storage] Approaching quota limit (${(currentSize / 1024 / 1024).toFixed(2)}MB / ${(this.MAX_STORAGE_BYTES / 1024 / 1024).toFixed(2)}MB)`);
+                    this._cleanup();
                 }
+
+                try {
+                    localStorage.setItem(fullKey, data);
+                    this._accessTimes.set(fullKey, Date.now());
+                } catch (e) {
+                    // Handle QuotaExceededError
+                    if (e.name === 'QuotaExceededError' || e.code === 22) {
+                        console.error('[Storage] Quota exceeded, attempting cleanup');
+                        this._cleanup();
+
+                        // Try again after cleanup
+                        try {
+                            localStorage.setItem(fullKey, data);
+                            this._accessTimes.set(fullKey, Date.now());
+                        } catch (e2) {
+                            // Still failing - notify user
+                            console.error('[Storage] Failed to save data after cleanup:', e2);
+                            const msg = 'Storage limit reached. Some progress may not be saved. Consider clearing old data.';
+                            // Show user-friendly warning
+                            if (document.getElementById('feedback')) {
+                                const feedback = document.getElementById('feedback');
+                                feedback.textContent = msg;
+                                feedback.classList.add('show', 'error');
+                                setTimeout(() => feedback.classList.remove('show'), 5000);
+                            } else {
+                                alert(msg);
+                            }
+                        }
+                    } else {
+                        console.error('Storage error:', e);
+                    }
+                }
+            },
+
+            /**
+             * Clear all mahjong data (for testing or user request)
+             */
+            clear() {
+                for (let key in localStorage) {
+                    if (key.startsWith('mahjong_')) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                this._accessTimes.clear();
+                console.log('[Storage] All mahjong data cleared');
             }
         };
 
