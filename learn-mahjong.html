@@ -1853,6 +1853,11 @@
 
         function initPractice() {
             const practiceArea = document.getElementById('practiceArea');
+            if (!practiceArea) {
+                console.log('[Debug] practiceArea not found, skipping initPractice');
+                return;
+            }
+
             practiceArea.innerHTML = '';
 
             // Shuffle tiles
@@ -1875,6 +1880,7 @@
                 };
                 practiceArea.appendChild(tileElement);
             });
+            console.log(`[Debug] initPractice completed, added ${shuffled.length} tiles`);
         }
 
         function selectTile(element, tileId) {
