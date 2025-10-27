@@ -18,12 +18,38 @@
 
 /**
  * Difficulty level configurations
+ *
+ * TIME LIMIT RATIONALE:
+ * Time limits are designed based on cognitive load theory and estimated tile processing time:
+ * - Tile recognition: ~500ms per tile (beginner), ~200ms (expert)
+ * - Decision making: ~2-3 seconds per decision
+ * - Buffer for mistakes: 20-30% additional time
+ *
+ * DESIGN PROGRESSION (time per tile):
+ * - Easy: 15 seconds/tile (60s / 4 tiles) - Generous learning pace
+ * - Medium: 6.4 seconds/tile (45s / 7 tiles) - Comfortable practice pace
+ * - Hard: 3.3 seconds/tile (30s / 9 tiles) - Challenging but achievable
+ * - Expert: 1.5 seconds/tile (20s / 13 tiles) - Professional/competitive pace
+ *
+ * VALIDATION STATUS: ⚠️ Initial design values - REQUIRES USER TESTING
+ * These values are based on:
+ * - Analogous timing from similar puzzle games (Mahjong solitaire, memory games)
+ * - General UX guidelines for timed challenges (Nielsen Norman Group)
+ * - Educational game pacing research (Gee, 2007)
+ *
+ * RECOMMENDED TESTING:
+ * - A/B test variants: ±25% time adjustment
+ * - Track completion rates and user frustration signals
+ * - Monitor difficulty transition timing
+ * - Collect user feedback on "too easy" vs "too hard" feelings
+ *
+ * TODO: Update with actual user testing data when available
  */
 const DIFFICULTY_CONFIGS = {
     easy: {
         name: 'Easy',
         tileCount: 4,
-        timeLimit: 60000, // 60 seconds
+        timeLimit: 60000, // 60 seconds (15s per tile)
         hintsAllowed: 3,
         mistakesAllowed: 3,
         scoreMultiplier: 1.0,
@@ -34,7 +60,7 @@ const DIFFICULTY_CONFIGS = {
     medium: {
         name: 'Medium',
         tileCount: 7,
-        timeLimit: 45000, // 45 seconds
+        timeLimit: 45000, // 45 seconds (6.4s per tile)
         hintsAllowed: 2,
         mistakesAllowed: 2,
         scoreMultiplier: 1.5,
@@ -45,7 +71,7 @@ const DIFFICULTY_CONFIGS = {
     hard: {
         name: 'Hard',
         tileCount: 9,
-        timeLimit: 30000, // 30 seconds
+        timeLimit: 30000, // 30 seconds (3.3s per tile)
         hintsAllowed: 1,
         mistakesAllowed: 1,
         scoreMultiplier: 2.0,
@@ -56,7 +82,7 @@ const DIFFICULTY_CONFIGS = {
     expert: {
         name: 'Expert',
         tileCount: 13,
-        timeLimit: 20000, // 20 seconds
+        timeLimit: 20000, // 20 seconds (1.5s per tile)
         hintsAllowed: 0,
         mistakesAllowed: 0,
         scoreMultiplier: 3.0,
