@@ -531,6 +531,9 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
+// ES6 module export (for import statements)
+export { EnhancedLearningSystem, createEnhancedLearningSystem };
+
 // Browser global export
 if (typeof window !== 'undefined') {
     window.EnhancedLearningSystem = EnhancedLearningSystem;

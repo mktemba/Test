@@ -92,10 +92,10 @@ test.describe('Smoke Tests - Critical Path', () => {
     // Navigate through lessons
     await basePage.navigateToLesson(3);
 
-    // Check localStorage has data
+    // Check localStorage has data (app uses 'mahjong_progress' key)
     const hasProgress = await page.evaluate(() => {
-      return localStorage.getItem('currentLesson') !== null ||
-             localStorage.getItem('userProgress') !== null;
+      const progress = localStorage.getItem('mahjong_progress');
+      return progress !== null && progress !== '';
     });
 
     expect(hasProgress).toBe(true);
