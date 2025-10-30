@@ -9,6 +9,10 @@ playwright/.cache/
 # Test artifacts
 *.webm
 *.zip
+coverage/
+.nyc_output/
+*-test-results.txt
+jest_*.json
 
 # IDE
 .vscode/
