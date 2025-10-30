@@ -1849,7 +1849,7 @@
             if (chowDisplay) {
                 chowDisplay.innerHTML = '';
                 [3, 4, 5].forEach(num => {
-                    const tile = window.tileRenderer.createTileElement('dot', num);
+                    const tile = window.tileRenderer.createTileElement('dots', num);
                     chowDisplay.appendChild(tile);
                 });
             }
@@ -1876,13 +1876,13 @@
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pung 5 Dots
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('dot', 5);
+                    const tile = window.tileRenderer.createTileElement('dots', 5);
                     winningDisplay.appendChild(tile);
                 }
                 winningDisplay.appendChild(document.createElement('div')); // spacer
                 // Pung 2 Characters
                 for (let i = 0; i < 3; i++) {
-                    const tile = window.tileRenderer.createTileElement('character', 2);
+                    const tile = window.tileRenderer.createTileElement('characters', 2);
                     winningDisplay.appendChild(tile);
                 }
                 winningDisplay.appendChild(document.createElement('div')); // spacer
@@ -1918,7 +1918,7 @@
                 });
                 // Pair
                 for (let i = 0; i < 2; i++) {
-                    const tile = window.tileRenderer.createTileElement('character', 1);
+                    const tile = window.tileRenderer.createTileElement('characters', 1);
                     allPungsDisplay.appendChild(tile);
                 }
             }
@@ -2201,12 +2201,12 @@
         const practiceTiles = [
             { id: 1, type: 'bamboo', value: 1 },
             { id: 2, type: 'bamboo', value: 1 },
-            { id: 3, type: 'dot', value: 2 },
-            { id: 4, type: 'dot', value: 2 },
+            { id: 3, type: 'dots', value: 2 },
+            { id: 4, type: 'dots', value: 2 },
             { id: 5, type: 'wind', value: 'east' },
             { id: 6, type: 'wind', value: 'south' },
-            { id: 7, type: 'character', value: 3 },
-            { id: 8, type: 'character', value: 3 }
+            { id: 7, type: 'characters', value: 3 },
+            { id: 8, type: 'characters', value: 3 }
         ];
 
         let selectedTiles = [];
@@ -2416,15 +2416,15 @@
             { id: 1, type: 'bamboo', value: 1 },
             { id: 2, type: 'bamboo', value: 1 },
             { id: 3, type: 'bamboo', value: 1 },
-            { id: 4, type: 'dot', value: 4 },
-            { id: 5, type: 'dot', value: 4 },
-            { id: 6, type: 'dot', value: 4 },
+            { id: 4, type: 'dots', value: 4 },
+            { id: 5, type: 'dots', value: 4 },
+            { id: 6, type: 'dots', value: 4 },
             { id: 7, type: 'wind', value: 'east' },
             { id: 8, type: 'wind', value: 'east' },
             { id: 9, type: 'wind', value: 'south' },
-            { id: 10, type: 'character', value: 2 },
-            { id: 11, type: 'character', value: 3 },
-            { id: 12, type: 'character', value: 3 }
+            { id: 10, type: 'characters', value: 2 },
+            { id: 11, type: 'characters', value: 3 },
+            { id: 12, type: 'characters', value: 3 }
         ];
 
         let selectedPungTiles = [];
@@ -2592,15 +2592,15 @@
             { id: 1, type: 'bamboo', value: 1 },
             { id: 2, type: 'bamboo', value: 2 },
             { id: 3, type: 'bamboo', value: 3 },
-            { id: 4, type: 'dot', value: 5 },
-            { id: 5, type: 'dot', value: 6 },
-            { id: 6, type: 'dot', value: 7 },
+            { id: 4, type: 'dots', value: 5 },
+            { id: 5, type: 'dots', value: 6 },
+            { id: 6, type: 'dots', value: 7 },
             { id: 7, type: 'wind', value: 'east' },
             { id: 8, type: 'wind', value: 'south' },
-            { id: 9, type: 'character', value: 1 },
-            { id: 10, type: 'character', value: 2 },
-            { id: 11, type: 'dot', value: 2 },
-            { id: 12, type: 'dot', value: 8 }
+            { id: 9, type: 'characters', value: 1 },
+            { id: 10, type: 'characters', value: 2 },
+            { id: 11, type: 'dots', value: 2 },
+            { id: 12, type: 'dots', value: 8 }
         ];
 
         let selectedChowTiles = [];
@@ -2767,43 +2767,43 @@
                     { type: 'bamboo', value: 1 },
                     { type: 'bamboo', value: 2 },
                     { type: 'bamboo', value: 3 },
-                    { type: 'dot', value: 5 },
-                    { type: 'dot', value: 5 },
-                    { type: 'dot', value: 5 },
+                    { type: 'dots', value: 5 },
+                    { type: 'dots', value: 5 },
+                    { type: 'dots', value: 5 },
                     { type: 'wind', value: 'east' },
                     { type: 'wind', value: 'east' },
                     { type: 'wind', value: 'east' },
-                    { type: 'character', value: 1 },
-                    { type: 'character', value: 1 },
-                    { type: 'character', value: 1 },
+                    { type: 'characters', value: 1 },
+                    { type: 'characters', value: 1 },
+                    { type: 'characters', value: 1 },
                     { type: 'dragon', value: 'red' }
                 ],
                 options: [
                     { type: 'dragon', value: 'red', correct: true },
                     { type: 'dragon', value: 'green', correct: false },
-                    { type: 'dot', value: 1, correct: false }
+                    { type: 'dots', value: 1, correct: false }
                 ],
                 explanation: 'You need another Red Dragon to complete the pair!'
             },
             {
                 hand: [
-                    { type: 'dot', value: 1 },
-                    { type: 'dot', value: 2 },
-                    { type: 'dot', value: 3 },
+                    { type: 'dots', value: 1 },
+                    { type: 'dots', value: 2 },
+                    { type: 'dots', value: 3 },
                     { type: 'bamboo', value: 6 },
                     { type: 'bamboo', value: 7 },
                     { type: 'bamboo', value: 8 },
                     { type: 'wind', value: 'south' },
                     { type: 'wind', value: 'south' },
                     { type: 'wind', value: 'south' },
-                    { type: 'character', value: 2 },
-                    { type: 'character', value: 2 },
-                    { type: 'character', value: 2 },
-                    { type: 'dot', value: 4 }
+                    { type: 'characters', value: 2 },
+                    { type: 'characters', value: 2 },
+                    { type: 'characters', value: 2 },
+                    { type: 'dots', value: 4 }
                 ],
                 options: [
-                    { type: 'dot', value: 4, correct: true },
-                    { type: 'dot', value: 5, correct: false },
+                    { type: 'dots', value: 4, correct: true },
+                    { type: 'dots', value: 5, correct: false },
                     { type: 'wind', value: 'south', correct: false }
                 ],
                 explanation: 'You need another 4 Dot to complete the pair!'
