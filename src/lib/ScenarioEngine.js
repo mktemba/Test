@@ -828,6 +828,9 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
+// ES6 module export (for import statements)
+export { ScenarioEngine, SCENARIOS, SCENARIO_DIFFICULTY, SCENARIO_CATEGORIES };
+
 // Browser global export
 if (typeof window !== 'undefined') {
     window.ScenarioEngine = ScenarioEngine;

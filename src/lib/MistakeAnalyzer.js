@@ -615,6 +615,10 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
+
+// ES6 module export (for import statements)
+export { MistakeAnalyzer MISTAKE_TYPES COMMON_CONFUSIONS };  };
+
 // Browser global export
 if (typeof window !== 'undefined') {
     window.MistakeAnalyzer = MistakeAnalyzer;

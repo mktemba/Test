@@ -580,6 +580,10 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
+
+// ES6 module export (for import statements)
+export { AudioManager SOUND_EFFECTS };  };
+
 // Browser global export
 if (typeof window !== 'undefined') {
     window.AudioManager = AudioManager;

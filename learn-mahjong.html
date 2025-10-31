@@ -1628,13 +1628,17 @@
                 }
             },
 
-            get: (key) => {
+            get: (key, defaultValue = null) => {
                 try {
                     const fullKey = `mahjong_${key}`;
                     this._accessTimes.set(fullKey, Date.now());
-                    return JSON.parse(localStorage.getItem(fullKey));
+                    const value = localStorage.getItem(fullKey);
+                    if (value === null) {
+                        return defaultValue;
+                    }
+                    return JSON.parse(value);
                 } catch {
-                    return null;
+                    return defaultValue;
                 }
             },
 
@@ -1733,14 +1737,27 @@
         };
 
         const simplePreferences = {
+            _watchers: new Map(),
             get: (key) => simpleDataManager.get(`pref_${key}`),
-            set: (key, value) => simpleDataManager.set(`pref_${key}`, value),
+            set: function(key, value) {
+                simpleDataManager.set(`pref_${key}`, value);
+                // Notify watchers
+                if (this._watchers.has(key)) {
+                    this._watchers.get(key).forEach(callback => callback(value));
+                }
+            },
             getPreference: function(key, defaultValue) {
                 const value = this.get(key);
                 return value !== null ? value : defaultValue;
             },
             setPreference: function(key, value) {
                 this.set(key, value);
+            },
+            watch: function(key, callback) {
+                if (!this._watchers.has(key)) {
+                    this._watchers.set(key, []);
+                }
+                this._watchers.get(key).push(callback);
             }
         };
 
