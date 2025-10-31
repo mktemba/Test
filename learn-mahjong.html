@@ -2026,7 +2026,7 @@
             scenariosList.innerHTML = '<div class="loading">Loading scenarios</div>';
 
             setTimeout(() => {
-                const scenarios = learningSystem.scenarioEngine.getAllScenarios();
+                const scenarios = learningSystem.scenarioEngine.getScenarios();
 
                 if (scenarios.length === 0) {
                     scenariosList.innerHTML = '<p>No scenarios available yet.</p>';
@@ -2159,10 +2159,8 @@
                 updateDashboard();
             }
 
-            // Track in learning system
-            if (window.learningSystem && window.learningSystem.progressAnalyzer) {
-                window.learningSystem.progressAnalyzer.trackLessonStart(`lesson_${lessonNum}`);
-            }
+            // Track in learning system (optional - method doesn't exist yet)
+            // Future: implement trackLessonStart in ProgressAnalyzer
         }
 
         function nextLesson() {
@@ -2170,11 +2168,10 @@
                 completedLessons.add(currentLesson);
                 document.querySelector(`.lesson-item[data-lesson="${currentLesson}"]`)?.classList.add('completed');
 
-                // Track completion
+                // Track completion using actual method
                 if (window.learningSystem && window.learningSystem.progressAnalyzer) {
-                    window.learningSystem.progressAnalyzer.trackLessonComplete(`lesson_${currentLesson}`, {
-                        score: 100,
-                        timeSpent: 60000 // Example time
+                    window.learningSystem.progressAnalyzer.trackLessonAccuracy(`lesson_${currentLesson}`, 100, {
+                        timeSpent: 60000
                     });
                 }
 
