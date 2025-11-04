@@ -557,7 +557,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 // ES6 module export (for import statements)
-export { DifficultyManager DIFFICULTY_CONFIGS PERFORMANCE_THRESHOLDS };  };
+export { DifficultyManager, DIFFICULTY_CONFIGS, PERFORMANCE_THRESHOLDS };
 
 // Browser global export
 if (typeof window !== 'undefined') {

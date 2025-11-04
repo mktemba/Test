@@ -2014,7 +2014,10 @@
 
         // Load scenarios
         window.loadScenarios = function() {
-            if (!learningSystem || !learningSystem.scenarioEngine) return;
+            if (!window.learningSystem || !window.learningSystem.scenarioEngine) {
+                console.error('Learning system or scenarioEngine not initialized');
+                return;
+            }
 
             const scenariosList = document.getElementById('scenariosList');
 
@@ -2026,7 +2029,7 @@
             scenariosList.innerHTML = '<div class="loading">Loading scenarios</div>';
 
             setTimeout(() => {
-                const scenarios = learningSystem.scenarioEngine.getScenarios();
+                const scenarios = window.learningSystem.scenarioEngine.getScenarios();
 
                 if (scenarios.length === 0) {
                     scenariosList.innerHTML = '<p>No scenarios available yet.</p>';
