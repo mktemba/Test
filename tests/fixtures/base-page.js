@@ -61,6 +61,19 @@ class MahjongBasePage {
     return this.page.locator('.lesson-content[data-lesson="12"] #currentHand');
   }
 
+  // Scenario elements (Lesson 14)
+  get scenariosList() {
+    return this.page.locator('#scenariosList');
+  }
+
+  get scenarioCards() {
+    return this.page.locator('.scenario-card');
+  }
+
+  getScenarioCard(index = 0) {
+    return this.scenarioCards.nth(index);
+  }
+
   // Helper methods
   async goto() {
     await this.page.goto('/');
@@ -80,6 +93,14 @@ class MahjongBasePage {
       // Wait for at least one tile to appear (up to 5 seconds)
       await this.page.waitForSelector('.lesson-content.active .tile', { timeout: 5000 }).catch(() => {
         console.warn(`[Warning] No tiles appeared for lesson ${lessonNumber} within 5 seconds`);
+      });
+    }
+
+    // For scenarios lesson (14), wait for scenarios to load
+    if (lessonNumber === 14) {
+      // Wait for scenarios to load (up to 10 seconds)
+      await this.page.waitForSelector('.scenario-card', { timeout: 10000 }).catch(() => {
+        console.warn(`[Warning] No scenarios appeared for lesson 14 within 10 seconds`);
       });
     }
   }

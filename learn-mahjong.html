@@ -1953,9 +1953,9 @@
         };
 
         window.updateMistakesPanel = function() {
-            if (!learningSystem || !learningSystem.mistakeAnalyzer) return;
+            if (!window.learningSystem || !window.learningSystem.mistakeAnalyzer) return;
 
-            const summary = learningSystem.mistakeAnalyzer.generateReport();
+            const summary = window.learningSystem.mistakeAnalyzer.generateReport();
             const summaryDiv = document.getElementById('mistakesSummary');
 
             if (summary.totalMistakes === 0) {
@@ -1983,9 +1983,9 @@
         };
 
         window.startTargetedPractice = function() {
-            if (!learningSystem || !learningSystem.mistakeAnalyzer) return;
+            if (!window.learningSystem || !window.learningSystem.mistakeAnalyzer) return;
 
-            const weakAreas = learningSystem.mistakeAnalyzer.getWeakAreas();
+            const weakAreas = window.learningSystem.mistakeAnalyzer.getWeakAreas();
             if (weakAreas.length === 0) {
                 alert('Great job! No weak areas identified. Keep practicing!');
                 return;
@@ -2066,20 +2066,20 @@
         };
 
         window.playScenario = function(scenarioId) {
-            if (!learningSystem || !learningSystem.scenarioEngine) return;
+            if (!window.learningSystem || !window.learningSystem.scenarioEngine) return;
 
-            const result = learningSystem.scenarioEngine.loadScenario(scenarioId);
-            if (result.success) {
-                alert(`Starting scenario: ${result.scenario.title}\n\n${result.scenario.description}`);
+            const scenario = window.learningSystem.scenarioEngine.getScenario(scenarioId);
+            if (scenario) {
+                alert(`Starting scenario: ${scenario.title}\n\n${scenario.description}`);
                 // Here you would implement the actual scenario gameplay
             }
         };
 
         // Update dashboard
         window.updateDashboard = function() {
-            if (!learningSystem || !learningSystem.progressAnalyzer) return;
+            if (!window.learningSystem || !window.learningSystem.progressAnalyzer) return;
 
-            const stats = learningSystem.progressAnalyzer.generateProgressReport();
+            const stats = window.learningSystem.progressAnalyzer.generateProgressReport();
 
             // Update stat cards
             const totalMinutes = Math.round((stats.totalPracticeTime || 0) / 60000);
