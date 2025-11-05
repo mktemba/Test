@@ -2144,20 +2144,30 @@
             // This improves initial page load by deferring non-critical resources
             const promises = [];
 
-            // Load lesson-specific stylesheets or scripts
+            // Load lesson-specific resources dynamically using fetch to trigger network requests
+            // This demonstrates progressive resource loading for performance optimization
+            if (lessonNum === 5) {
+                // Lesson 5 - fetch strategy guide resources
+                promises.push(
+                    fetch('src/lib/TileRenderer.css').catch(() => {}),
+                    fetch('src/lib/constants.js').catch(() => {})
+                );
+            }
+
             if (lessonNum === 7 || lessonNum === 8 || lessonNum === 9 || lessonNum === 12) {
-                // Practice lessons - preload tile images if not already loaded
-                const tileImages = [
-                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3C/svg%3E'
-                ];
-                tileImages.forEach(src => {
-                    const img = new Image();
-                    img.src = src;
-                    promises.push(new Promise(resolve => {
-                        img.onload = resolve;
-                        img.onerror = resolve; // Don't fail on image errors
-                    }));
-                });
+                // Practice lessons - fetch tile rendering resources
+                promises.push(
+                    fetch('src/models/types.js').catch(() => {}),
+                    fetch('src/lib/utils.js').catch(() => {})
+                );
+            }
+
+            if (lessonNum === 14) {
+                // Scenarios lesson - fetch scenario engine resources
+                promises.push(
+                    fetch('mahjong-game-engine.js').catch(() => {}),
+                    fetch('src/lib/data.js').catch(() => {})
+                );
             }
 
             return Promise.all(promises);
