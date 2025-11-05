@@ -260,12 +260,23 @@ test.describe('Mahjong App - Game Scenarios (Lesson 14)', () => {
   });
 
   test('should display loading state initially', async () => {
-    // Navigate to lesson 14 but don't wait for scenarios to load
-    await basePage.navigateToLesson(14);
+    // Navigate to lesson 14 without using the helper that waits for scenarios
+    // Directly trigger the lesson navigation to catch the loading state
+    await page.evaluate(() => {
+      window.switchLesson(14);
+    });
 
-    // Check for loading message (before the 500ms timeout)
+    // Immediately check for loading message (before the 500ms timeout)
+    // Use a short timeout to catch the loading state before scenarios load
     const loadingMessage = page.locator('#scenariosList .loading');
-    await expect(loadingMessage).toBeVisible();
+    await expect(loadingMessage).toBeVisible({ timeout: 200 });
+
+    // Verify loading state disappears after scenarios load
+    await expect(loadingMessage).not.toBeVisible({ timeout: 1000 });
+
+    // Verify scenarios loaded successfully
+    const scenarioCards = page.locator('.scenario-card');
+    await expect(scenarioCards.first()).toBeVisible();
   });
 
   test('should handle missing learningSystem gracefully', async () => {
