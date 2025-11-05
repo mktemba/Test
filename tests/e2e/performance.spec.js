@@ -78,10 +78,10 @@ test.describe('Performance Testing', () => {
       await basePage.goto();
 
       const renderBlockingResources = await page.evaluate(() => {
-        const scripts = Array.from(document.querySelectorAll('script:not([async]):not([defer])'));
+        const scripts = Array.from(document.querySelectorAll('script:not([async]):not([defer]):not([type="module"])'));
         const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
         return {
-          blockingScripts: scripts.filter(s => !s.src.includes('async')).length,
+          blockingScripts: scripts.length,
           blockingStyles: styles.length
         };
       });
@@ -121,7 +121,7 @@ test.describe('Performance Testing', () => {
 
       // Force garbage collection if available
       await page.evaluate(() => {
-        if (global.gc) global.gc();
+        if (window.gc) window.gc();
       });
 
       const finalMemory = await page.evaluate(() => performance.memory?.usedJSHeapSize || 0);
