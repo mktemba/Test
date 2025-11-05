@@ -139,7 +139,21 @@ const Utils = {
     },
 
     /**
-     * Create element with attributes
+     * Escape HTML to prevent XSS
+     * @param {string} text
+     * @returns {string}
+     */
+    escapeHTML(text) {
+        if (typeof text !== 'string') {
+            return String(text);
+        }
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    /**
+     * Create element with attributes (XSS-safe)
      * @param {string} tag
      * @param {Object} attrs
      * @param {string|Node|Node[]} children
@@ -163,12 +177,14 @@ const Utils = {
 
         if (children) {
             if (typeof children === 'string') {
+                // Use textContent for security - prevents XSS
                 el.textContent = children;
             } else if (Array.isArray(children)) {
                 children.forEach(child => {
                     if (child instanceof Node) {
                         el.appendChild(child);
                     } else if (typeof child === 'string') {
+                        // Use createTextNode for security
                         el.appendChild(document.createTextNode(child));
                     }
                 });

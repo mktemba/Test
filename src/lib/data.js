@@ -9,6 +9,28 @@ class DataManager {
         this.storage = window.localStorage;
         this.prefix = 'mahjong_';
         this.cache = new Map();
+        this.allowedOrigins = [
+            'http://localhost:8080',
+            'http://127.0.0.1:8080',
+            'https://mahjong-app.com'
+        ];
+    }
+
+    /**
+     * Validate origin for localStorage operations
+     * Additional security layer beyond browser's same-origin policy
+     * @returns {boolean}
+     */
+    validateOrigin() {
+        const origin = window.location.origin;
+
+        // Allow localhost on any port for development
+        if (origin.startsWith('http://localhost:') ||
+            origin.startsWith('http://127.0.0.1:')) {
+            return true;
+        }
+
+        return this.allowedOrigins.includes(origin);
     }
 
     /**
@@ -18,6 +40,12 @@ class DataManager {
      * @returns {*}
      */
     get(key, defaultValue = null) {
+        // Validate origin before localStorage access
+        if (!this.validateOrigin()) {
+            console.error('localStorage access blocked: Invalid origin');
+            return defaultValue;
+        }
+
         const fullKey = this.prefix + key;
 
         if (this.cache.has(fullKey)) {
@@ -44,6 +72,12 @@ class DataManager {
      * @returns {boolean} Success status
      */
     set(key, value) {
+        // Validate origin before localStorage access
+        if (!this.validateOrigin()) {
+            console.error('localStorage access blocked: Invalid origin');
+            return false;
+        }
+
         const fullKey = this.prefix + key;
 
         try {

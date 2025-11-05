@@ -32,6 +32,27 @@ class PreferencesManager {
 
         this.cache = null;
         this.listeners = new Map();
+        this.allowedOrigins = [
+            'http://localhost:8080',
+            'http://127.0.0.1:8080',
+            'https://mahjong-app.com'
+        ];
+    }
+
+    /**
+     * Validate origin for localStorage operations
+     * @returns {boolean}
+     */
+    validateOrigin() {
+        const origin = window.location.origin;
+
+        // Allow localhost on any port for development
+        if (origin.startsWith('http://localhost:') ||
+            origin.startsWith('http://127.0.0.1:')) {
+            return true;
+        }
+
+        return this.allowedOrigins.includes(origin);
     }
 
     /**
@@ -40,6 +61,13 @@ class PreferencesManager {
      */
     load() {
         if (this.cache) return this.cache;
+
+        // Validate origin before localStorage access
+        if (!this.validateOrigin()) {
+            console.error('localStorage access blocked: Invalid origin');
+            this.cache = Object.assign({}, this.defaults);
+            return this.cache;
+        }
 
         try {
             const stored = localStorage.getItem('mahjong_preferences');
@@ -60,6 +88,12 @@ class PreferencesManager {
      * Save all preferences to storage
      */
     save() {
+        // Validate origin before localStorage access
+        if (!this.validateOrigin()) {
+            console.error('localStorage access blocked: Invalid origin');
+            return;
+        }
+
         try {
             localStorage.setItem('mahjong_preferences', JSON.stringify(this.cache));
         } catch (error) {
