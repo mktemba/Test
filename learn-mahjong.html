@@ -2262,6 +2262,10 @@
             }
         }
 
+        // Expose navigation functions to global scope for inline onclick handlers
+        window.nextLesson = nextLesson;
+        window.previousLesson = previousLesson;
+
         function completeLesson() {
             completedLessons.add(currentLesson);
             updateProgress();
@@ -2273,6 +2277,9 @@
 
             alert('Congratulations! You\'ve completed the Mahjong tutorial! 🎉\n\nYou now know:\n- The different types of tiles\n- How to build sets\n- What makes a winning hand\n- Basic gameplay rules\n- Strategy and tactics\n\nKeep practicing to become a Mahjong master!');
         }
+
+        // Expose completeLesson to global scope for inline onclick handler
+        window.completeLesson = completeLesson;
 
         // Sidebar click handlers
         document.querySelectorAll('.lesson-item').forEach(item => {
@@ -2488,8 +2495,21 @@
             correctPairs = 0;
             document.getElementById('feedback').classList.remove('show');
             document.getElementById('pairsNextBtn').disabled = true;
+
+            // Remove 'selected' class from all tiles before re-initializing
+            const practiceArea = document.getElementById('practiceArea');
+            if (practiceArea) {
+                practiceArea.querySelectorAll('.tile.selected').forEach(tile => {
+                    tile.classList.remove('selected');
+                });
+            }
+
             initPractice();
         }
+
+        // Expose practice functions to global scope for inline onclick handlers
+        window.checkPairs = checkPairs;
+        window.resetPractice = resetPractice;
 
         // Initialize practice when page loads - wait for tileRenderer
         window.waitForTileRenderer(initPractice, 'initPractice');
@@ -2670,6 +2690,10 @@
             initPungPractice();
         }
 
+        // Expose pung practice functions to global scope for inline onclick handlers
+        window.checkPungs = checkPungs;
+        window.resetPungPractice = resetPungPractice;
+
         // =================
         // LESSON 9: Find Chows Practice
         // =================
@@ -2843,6 +2867,10 @@
             initChowPractice();
         }
 
+        // Expose chow practice functions to global scope for inline onclick handlers
+        window.checkChows = checkChows;
+        window.resetChowPractice = resetChowPractice;
+
         // =================
         // LESSON 12: Build Winning Hand Practice
         // =================
@@ -3015,6 +3043,9 @@
             document.getElementById('winHandNextBtn').disabled = true;
             initWinningHandPractice();
         }
+
+        // Expose winning hand practice function to global scope for inline onclick handlers
+        window.resetWinningHandPractice = resetWinningHandPractice;
 
         // Initialize exercises when switching to their lessons
         const originalSwitchLesson = switchLesson;
