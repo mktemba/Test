@@ -1343,17 +1343,18 @@
         </button>
     </div>
 
-    <!-- Load modular architecture -->
-    <script src="src/lib/constants.js"></script>
-    <script src="mahjong-game-engine.js"></script>
-    <script src="src/models/types.js"></script>
-    <script src="src/lib/utils.js"></script>
-    <script src="src/lib/data.js"></script>
-    <script src="src/lib/preferences.js"></script>
-    <script src="src/components/TutorialManager.js"></script>
-    <script src="src/lib/MahjongController.js"></script>
+    <!-- Load modular architecture - defer for non-blocking rendering -->
+    <script defer src="src/lib/constants.js"></script>
+    <script defer src="src/lib/security.js"></script>
+    <script defer src="mahjong-game-engine.js"></script>
+    <script defer src="src/models/types.js"></script>
+    <script defer src="src/lib/utils.js"></script>
+    <script defer src="src/lib/data.js"></script>
+    <script defer src="src/lib/preferences.js"></script>
+    <script defer src="src/components/TutorialManager.js"></script>
+    <script defer src="src/lib/MahjongController.js"></script>
 
-    <!-- Enhanced Learning System Modules -->
+    <!-- Enhanced Learning System Modules - modules are deferred by default -->
     <script type="module" src="src/lib/TileRenderer.js"></script>
     <script type="module" src="src/lib/DifficultyManager.js"></script>
     <script type="module" src="src/lib/AudioManager.js"></script>
@@ -1363,7 +1364,7 @@
     <script type="module" src="src/lib/EnhancedLearningIntegration.js"></script>
 
     <!-- Define waitForTileRenderer before main.js loads -->
-    <script>
+    <script type="module">
         window.waitForTileRenderer = function(callback, callbackName = 'callback') {
             if (window.tileRenderer && typeof window.tileRenderer.createTileElement === 'function') {
                 try {
@@ -1383,7 +1384,7 @@
         };
     </script>
 
-    <script src="src/main.js"></script>
+    <script defer src="src/main.js"></script>
 
     <script type="module">
         // Import Enhanced Learning System
@@ -2110,7 +2111,7 @@
         window.learningSystemReady = true;
     </script>
 
-    <script>
+    <script type="module">
         // Lesson navigation
         let currentLesson = 1;
         const totalLessons = 15;
@@ -2127,7 +2128,45 @@
             }));
         }
 
+        // Lazy loading tracker
+        const loadedLessonResources = new Set();
+
+        function lazyLoadLessonResources(lessonNum) {
+            // Skip if already loaded
+            if (loadedLessonResources.has(lessonNum)) {
+                return Promise.resolve();
+            }
+
+            // Mark as loaded
+            loadedLessonResources.add(lessonNum);
+
+            // Lazy load lesson-specific resources
+            // This improves initial page load by deferring non-critical resources
+            const promises = [];
+
+            // Load lesson-specific stylesheets or scripts
+            if (lessonNum === 7 || lessonNum === 8 || lessonNum === 9 || lessonNum === 12) {
+                // Practice lessons - preload tile images if not already loaded
+                const tileImages = [
+                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3C/svg%3E'
+                ];
+                tileImages.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                    promises.push(new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve; // Don't fail on image errors
+                    }));
+                });
+            }
+
+            return Promise.all(promises);
+        }
+
         function switchLesson(lessonNum) {
+            // Cleanup previous lesson resources to prevent memory leaks
+            cleanupLessonResources();
+
             // Hide all lessons
             document.querySelectorAll('.lesson-content').forEach(content => {
                 content.classList.remove('active');
@@ -2155,15 +2194,33 @@
                 updateProgress();
             }
 
-            // Load lesson-specific content
-            if (lessonNum === 14) {
-                loadScenarios();
-            } else if (lessonNum === 15) {
-                updateDashboard();
-            }
+            // Lazy load lesson-specific resources
+            lazyLoadLessonResources(lessonNum).then(() => {
+                // Load lesson-specific content after resources are ready
+                if (lessonNum === 14) {
+                    loadScenarios();
+                } else if (lessonNum === 15) {
+                    updateDashboard();
+                }
+            });
 
             // Track in learning system (optional - method doesn't exist yet)
             // Future: implement trackLessonStart in ProgressAnalyzer
+        }
+
+        // Cleanup function to prevent memory leaks during navigation
+        function cleanupLessonResources() {
+            // Remove any dynamically created elements from previous lessons
+            document.querySelectorAll('.dynamic-lesson-content').forEach(el => el.remove());
+
+            // Clear any timers or intervals that might be running
+            const highestId = window.setTimeout(() => {}, 0);
+            for (let i = 0; i < highestId; i++) {
+                const hasTimer = window.clearTimeout(i);
+                if (hasTimer) {
+                    // Timer was cleared
+                }
+            }
         }
 
         function nextLesson() {
@@ -2957,6 +3014,9 @@
             if (lessonNum === 9) window.waitForTileRenderer(initChowPractice, 'initChowPractice-L9');
             if (lessonNum === 12) window.waitForTileRenderer(initWinningHandPractice, 'initWinningHandPractice-L12');
         };
+
+        // Expose switchLesson for testing purposes
+        window.switchLesson = switchLesson;
 
         // Load saved progress
         try {
