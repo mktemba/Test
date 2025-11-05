@@ -1344,8 +1344,9 @@
     </div>
 
     <!-- Load modular architecture - defer for non-blocking rendering -->
+    <!-- Security module loads immediately for XSS protection -->
+    <script src="src/lib/security.js"></script>
     <script defer src="src/lib/constants.js"></script>
-    <script defer src="src/lib/security.js"></script>
     <script defer src="mahjong-game-engine.js"></script>
     <script defer src="src/models/types.js"></script>
     <script defer src="src/lib/utils.js"></script>
